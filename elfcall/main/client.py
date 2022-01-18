@@ -77,7 +77,7 @@ class BinaryInterface:
             seen = set()
 
         # If we don't have needed or the root, create data structures
-        if not root and not needed_search:
+        if root == None and not needed_search:
             root = []
             needed_search = [e.needed]
 
@@ -111,18 +111,17 @@ class BinaryInterface:
                 node = {
                     "level": level,
                     "children": [],
+                    "source": os.path.basename(source),
                     "name": os.path.basename(lib["fullpath"]),
                 }
                 node.update(lib)
                 root.append(node)
-                level += 1
                 if libelf.needed:
                     self.recursive_find(
                         lib["realpath"],
                         root=node["children"],
                         needed_search=needed_search,
-                        seen=seen,
-                        level=level,
+                        level=(level + 1),
                     )
         return root
 
@@ -132,8 +131,10 @@ class BinaryInterface:
         """
 
         def parse_result(result):
-            spacing = result["level"] * "  "
-            logger.info(spacing + result["name"])
+            spacing = result["level"] * "   "
+            # TODO better formatting and color / spacing
+            line = spacing + result["name"]
+            logger.info(line.ljust(30) + " [" + result["source"] + "]")
             for child in result["children"]:
                 parse_result(child)
 
