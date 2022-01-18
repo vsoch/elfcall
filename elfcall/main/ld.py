@@ -65,13 +65,24 @@ class LibraryParser:
         path = os.environ.get("LD_LIBRARY_PATH")
         if not path:
             return []
+
+        # TODO we might want to add PWD here if the last one is empty
+        # it's technically valid (but is it common? should we leave out?)
+        #
         paths = [x for x in path.split(":") if x]
         for path in paths:
             self.sources.append({"lib": path, "source": "LD_LIBRARY_PATH"})
         return paths
 
+    @property
+    def default_paths(self):
+        return ["/lib", "/lib64", "/usr/lib", "/usr/lib64"]
+
     def set_default_paths(self):
-        paths = ["/lib", "/lib64", "/usr/lib", "/usr/lib64"]
-        for path in paths:
+        """
+        Add to sources, but don't add to paths list, because default paths
+        come after the DT_RUNTIME and/or DT_RPATH.
+        """
+        for path in self.default_paths:
             self.sources.append({"lib": path, "source": "default"})
-        return paths
+        return []

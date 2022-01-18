@@ -62,6 +62,12 @@ class BinaryInterface:
             logger.exit("A binary is required.")
         self.reset()
         self.ld.parse()
+
+        # TODO will we ever want to match:
+        # e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],
+        # e_machine, e_type, e_flags and e_version.
+        #
+
         results = self.recursive_find(binary)
         self.library_tree(results)
 
@@ -85,6 +91,13 @@ class BinaryInterface:
         if e.needed:
             needed_search.append(e.needed)
 
+        # Paths to search are defaults plus binary specific
+        # DT_RUNPATH/DT_RPATH is searched after LD_LIBRARY_PATH, defaults are last
+        search_paths = self.ld.paths + e.rrunpaths + self.ld.default_paths
+
+        # We need to parse next level AFTER so save list
+        next_parsed = []
+
         # First look for libraries in DT_NEEDED on ld.paths
         while needed_search:
             needed = needed_search.pop(0)
@@ -94,7 +107,7 @@ class BinaryInterface:
                 if path in seen:
                     continue
                 seen.add(path)
-                lib, src = self.find_library(path, self.ld.paths)
+                lib, src = self.find_library(path, search_paths)
 
                 # Assume we must find all libraries (ld paths do not change)
                 if not lib:
@@ -117,12 +130,23 @@ class BinaryInterface:
                 node.update(lib)
                 root.append(node)
                 if libelf.needed:
-                    self.recursive_find(
-                        lib["realpath"],
-                        root=node["children"],
-                        needed_search=needed_search,
-                        level=(level + 1),
+                    next_parsed.append(
+                        {
+                            "lib": lib["realpath"],
+                            "root": node["children"],
+                            "needed": needed_search,
+                            "level": level + 1,
+                        }
                     )
+
+        for next in next_parsed:
+            self.recursive_find(
+                next["lib"],
+                root=next["root"],
+                needed_search=next["needed"],
+                level=next["level"],
+            )
+
         return root
 
     def library_tree(self, results):
@@ -235,6 +259,13 @@ class BinaryInterface:
         Given a listing of paths, look for a library by name
         """
         logger.debug("Looking for %s" % name)
+
+        # More rare case - the name is a path and it exists
+        # If a shared object name has one or more slash (/) characters anywhere in the name
+        # the dynamic linker uses that string directly as the path name.
+        if os.sep in name and os.path.exists(name):
+            self.library_cache[name] = name
+
         # We've looked already and found this first one
         if name in self.library_cache:
             return self.library_cache[name]

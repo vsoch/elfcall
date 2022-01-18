@@ -13,6 +13,9 @@ class ElfFile:
         # We will eventually want imported and exported symbols
         self._exported = {}
         self._imported = {}
+        self._needed = []
+        self._runpath = []
+        self._rpath = []
 
         # Try reading as ELF (will raise exception if fails
         self.fd = open(filename, "rb")
@@ -28,15 +31,50 @@ class ElfFile:
     def __exit__(self):
         self.fd.close()
 
-    @property
-    def needed(self):
-        linked_libs = []
+    def yield_tag(self, name):
         for section in self.elf.iter_sections():
             if isinstance(section, elftools.elf.dynamic.DynamicSection):
                 for tag in section.iter_tags():
-                    if tag.entry.d_tag == "DT_NEEDED" and tag.needed not in linked_libs:
-                        linked_libs.append(tag.needed)
-        return linked_libs
+                    if tag.entry.d_tag == name:
+                        yield tag
+
+    @property
+    def rpath(self):
+        if not self._rpath:
+            for tag in self.yield_tag("DT_RPATH"):
+                if tag.rpath not in self._rpath:
+                    self._rpath.append(tag.rpath)
+        return self._rpath
+
+    @property
+    def rrunpaths(self):
+        """
+        Shared function to handle rpath or runpath.
+
+        If both DT_RPATH and DT_RUNPATH entries appear in a single object's
+        dynamic array, the dynamic linker processes only the DT_RUNPATH entry.
+        """
+        if self.rpath and self.runpath:
+            return self.runpath
+        if self.rpath:
+            return self.rpath
+        return self.runpath
+
+    @property
+    def runpath(self):
+        if not self._runpath:
+            for tag in self.yield_tag("DT_RUNPATH"):
+                if tag.runpath not in self._runpath:
+                    self._runpath.append(tag.runpath)
+        return self._runpath
+
+    @property
+    def needed(self):
+        if not self._needed:
+            for tag in self.yield_tag("DT_NEEDED"):
+                if tag.needed not in self._needed:
+                    self._needed.append(tag.needed)
+        return self._needed
 
     @property
     def operating_system(self):
