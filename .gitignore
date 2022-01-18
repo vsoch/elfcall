@@ -1,0 +1,8 @@
+__pycache__
+.env
+env/
+data/foo-exec
+data/libfoo.so
+data/codegen.*
+elfcall.egg-info
+.eggs
