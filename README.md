@@ -126,11 +126,13 @@ libpthread.so.0                [i386-linux-gnu.conf]
 libc.so.6                      [i386-linux-gnu.conf]
 ```
 
-**QUESTION: do we finish parsing level 1 before the others?**
 
-**under development not working yet**
+## TODO
 
-We don't account for symbols here, so if a library is in DT_NEEDED it is searched for.
+ - test each of graph generations, add to client
+ - logo for library
+ - nice documentation
+ - tests tests tests!
 
 ## License
 
