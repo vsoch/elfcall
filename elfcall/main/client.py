@@ -3,9 +3,9 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 from elfcall.logger import logger
+import elfcall.main.graph as graph
 import elfcall.main.ld as ld
 import elfcall.main.elf as elf
-import elfcall.utils as utils
 
 import os
 import re
@@ -66,7 +66,7 @@ class BinaryInterface:
         # TODO will we ever want to match:
         # e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],
         # e_machine, e_type, e_flags and e_version.
-        #
+        # https://github.com/vsoch/elfcall/issues/1
 
         results = self.recursive_find(binary)
         self.library_tree(results)
@@ -93,7 +93,7 @@ class BinaryInterface:
 
         # Paths to search are defaults plus binary specific
         # DT_RUNPATH/DT_RPATH is searched after LD_LIBRARY_PATH, defaults are last
-        search_paths = self.ld.paths + e.rrunpaths + self.ld.default_paths
+        search_paths = self.get_search_paths(e)
 
         # We need to parse next level AFTER so save list
         next_parsed = []
@@ -165,7 +165,7 @@ class BinaryInterface:
         for result in results:
             parse_result(result)
 
-    def gen(self, binary=None):
+    def gen(self, binary=None, fmt=None):
         """
         Generate a graph of symbols (e.g., where everything is found)
         """
@@ -176,17 +176,41 @@ class BinaryInterface:
         self.ld.parse()
         locations = self.parse_binary(binary)
 
-        # Organize locations by fullpath
-        organized = {}
-        for symbol, meta in locations.items():
-            if meta["lib"]["fullpath"] not in organized:
-                organized[meta["lib"]["fullpath"]] = []
-            organized[meta["lib"]["fullpath"]].append(symbol)
+        # Select output format (default to console)
+        # TODO add command line flag
+        if fmt == "text":
+            out = graph.Text(locations)
+        else:
+            out = graph.Console(locations)
 
-        for lib, symbols in organized.items():
-            logger.info("==" + lib + "==")
-            symbols.sort()
-            utils.colify(symbols)
+        out.generate()
+
+    def get_search_paths(self, e):
+        """
+        Based on existence of RPATH and RUNTIME path, return ELF search path
+        """
+        if e.rpath and e.runpath:
+            search_paths = (
+                self.ld.library_paths
+                + e.runpath
+                + self.ld.ld.conf_paths
+                + self.ld.default_paths
+            )
+        elif e.rpath:
+            search_paths = (
+                e.rpath
+                + self.ld.library_paths
+                + self.ld.conf_paths
+                + self.ld.default_paths
+            )
+        else:
+            search_paths = (
+                self.ld.library_paths
+                + e.runpath
+                + self.ld.conf_paths
+                + self.ld.default_paths
+            )
+        return search_paths
 
     def parse_binary(self, binary):
         """
@@ -205,6 +229,8 @@ class BinaryInterface:
 
         # Keep track of levels of needed, we will parse through level 0, 1, etc.
         # E.g., needed_search.pop(0) gets the next level to look
+        # Same as recursive, but without recursion :)
+        search_paths = self.get_search_paths(e)
 
         # Then at the symbol tables of the DT_NEEDED entries (in order)
         # and then at the second level DT_NEEDED entries, and so on.
@@ -213,6 +239,9 @@ class BinaryInterface:
         # Keep track of libraries we've seen
         seen = set()
 
+        # also keep track of linked libraries (e.g., which has needed)
+        linked_libs = {}
+
         # First look for libraries in DT_NEEDED on ld.paths
         while needed_search:
             needed = needed_search.pop(0)
@@ -220,7 +249,7 @@ class BinaryInterface:
                 if path in seen:
                     continue
                 seen.add(path)
-                lib, _ = self.find_library(path, self.ld.paths)
+                lib, _ = self.find_library(path, search_paths)
 
                 # Assume we must find all libraries (ld paths do not change)
                 if not lib:
@@ -244,7 +273,8 @@ class BinaryInterface:
                 for name, symbol in imported.items():
                     if name in exported_contenders:
                         logger.debug("Found %s -> %s" % (name, path))
-                        found[name] = {"lib": lib}
+                        found[name] = {"lib": lib, "linked_libs": libelf.needed}
+                        found[name].update(symbol)
                         to_removes.append(name)
                 for to_remove in to_removes:
                     del imported[to_remove]

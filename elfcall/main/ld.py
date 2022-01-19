@@ -10,15 +10,15 @@ import os
 class LibraryParser:
     def __init__(self):
         """Return a list of parsed paths"""
-        self.paths = []
+        self.library_paths = []
+        self.conf_paths = []
 
         # Keep lookup of where each came from
         self.sources = []
 
     def parse(self):
-        self.paths += self.parse_ld_so_conf()
-        self.paths += self.parse_ld_library_path()
-        self.paths += self.set_default_paths()
+        self.conf_paths = self.parse_ld_so_conf()
+        self.library_paths = self.parse_ld_library_path()
 
     def find_source(self, name):
         """

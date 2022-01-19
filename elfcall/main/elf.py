@@ -47,20 +47,6 @@ class ElfFile:
         return self._rpath
 
     @property
-    def rrunpaths(self):
-        """
-        Shared function to handle rpath or runpath.
-
-        If both DT_RPATH and DT_RUNPATH entries appear in a single object's
-        dynamic array, the dynamic linker processes only the DT_RUNPATH entry.
-        """
-        if self.rpath and self.runpath:
-            return self.runpath
-        if self.rpath:
-            return self.rpath
-        return self.runpath
-
-    @property
     def runpath(self):
         if not self._runpath:
             for tag in self.yield_tag("DT_RUNPATH"):
@@ -105,6 +91,7 @@ class ElfFile:
     def _group_symbols(self):
         """Iterate through symbols and put into imported and exported"""
         for symbol in self.iter_symbols():
+
             # Strip compiler @@ versions?
             if "@@" in symbol["name"]:
                 symbol["name"] = symbol["name"].split("@@")[0]

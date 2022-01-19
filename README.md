@@ -60,6 +60,7 @@ _ZNSt8ios_base4InitC1Ev    _ZNSt8ios_base4InitD1Ev
 __cxa_atexit    __cxa_finalize
 
 ```
+
 You can add `--debug` to see what is searched and when symbols are found:
 
 ```bash

@@ -34,7 +34,7 @@ def mkdir_p(path):
             sys.exit("Error creating path %s, exiting." % path)
 
 
-def get_tmpfile(tmpdir=None, prefix=""):
+def get_tmpfile(tmpdir=None, prefix="", suffix=None):
     """
     Get a temporary file with an optional prefix.
     """
@@ -46,7 +46,7 @@ def get_tmpfile(tmpdir=None, prefix=""):
     if tmpdir:
         prefix = os.path.join(tmpdir, os.path.basename(prefix))
 
-    fd, tmp_file = tempfile.mkstemp(prefix=prefix)
+    fd, tmp_file = tempfile.mkstemp(prefix=prefix, suffix=suffix)
     os.close(fd)
 
     return tmp_file
