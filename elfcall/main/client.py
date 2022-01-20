@@ -45,6 +45,9 @@ class BinaryInterface:
         # Cache of library path to symbols (imported and exported)
         self.symbols_cache = {}
 
+        # Cache of sources (e.g., lookup a soname or name and get source path
+        self.source_cache = {}
+
     def check(self):
         """
         Ensure that each binary exists, and we have a fullpath
@@ -107,32 +110,33 @@ class BinaryInterface:
                 if path in seen:
                     continue
                 seen.add(path)
-                lib, src = self.find_library(path, search_paths)
+
+                libelf, src, already_seen = self.find_library(path, search_paths)
+
+                # We might get back a soname instead we've already seen
+                if already_seen:
+                    continue
 
                 # Assume we must find all libraries (ld paths do not change)
-                if not lib:
+                if not libelf:
                     logger.warning("Cannot find needed library %s" % path)
                     continue
 
                 source = self.ld.find_source(src) or "unknown"
-                try:
-                    libelf = elf.ElfFile(lib["realpath"])
-                except:
-                    continue
 
                 # Keep record of what we found!
                 node = {
                     "level": level,
                     "children": [],
                     "source": os.path.basename(source),
-                    "name": os.path.basename(lib["fullpath"]),
+                    "name": os.path.basename(libelf.fullpath),
                 }
-                node.update(lib)
+                node.update({"realpath": libelf.realpath, "fullpath": libelf.fullpath})
                 root.append(node)
                 if libelf.needed:
                     next_parsed.append(
                         {
-                            "lib": lib["realpath"],
+                            "lib": libelf.realpath,
                             "root": node["children"],
                             "needed": needed_search,
                             "level": level + 1,
@@ -249,17 +253,17 @@ class BinaryInterface:
                 if path in seen:
                     continue
                 seen.add(path)
-                lib, _ = self.find_library(path, search_paths)
 
-                # Assume we must find all libraries (ld paths do not change)
-                if not lib:
-                    logger.warning("Cannot find needed library %s" % path)
+                # This will return loaded ELF, if found, otherwise None
+                libelf, _, already_seen = self.find_library(path, search_paths)
+
+                # We might get back a soname instead we've already seen
+                if already_seen:
                     continue
 
-                # If we find the library, read ELF and look for symbols
-                try:
-                    libelf = elf.ElfFile(lib["realpath"])
-                except:
+                # Assume we must find all libraries (ld paths do not change)
+                if not libelf:
+                    logger.warning("Cannot find needed library %s" % path)
                     continue
 
                 if libelf.needed:
@@ -295,10 +299,11 @@ class BinaryInterface:
         # the dynamic linker uses that string directly as the path name.
         if os.sep in name and os.path.exists(name):
             self.library_cache[name] = name
+            return self.library_cache[name], self.source_cache[name], False
 
-        # We've looked already and found this first one
+        # We've looked already and found this one before
         if name in self.library_cache:
-            return self.library_cache[name]
+            return self.library_cache[name], self.source_cache[name], True
 
         for path in paths:
 
@@ -312,8 +317,26 @@ class BinaryInterface:
                 self.ld_dir_cache[path] = files
 
             if name in files:
-                self.library_cache[name] = files[name]
-                return self.library_cache[name], path
+
+                # If we find the library, read ELF and look for symbols
+                try:
+                    libelf = elf.ElfFile(
+                        files[name]["realpath"], files[name]["fullpath"]
+                    )
+                except:
+                    logger.warning("Cannot load %s" % files[name])
+                    continue
+
+                # Here we save based on soname, if defined
+                if libelf.soname:
+                    self.library_cache[libelf.soname] = libelf
+                    self.source_cache[libelf.soname] = path
+                    self.source_cache[name] = path
+                    return libelf, path, False
+
+                self.library_cache[name] = libelf
+                self.source_cache[name] = path
+                return libelf, path, False
 
         return None, None
 

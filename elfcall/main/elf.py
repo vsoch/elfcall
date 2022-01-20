@@ -6,8 +6,9 @@ import elftools.elf.elffile
 
 
 class ElfFile:
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, realpath, fullpath=None):
+        self.realpath = realpath
+        self.fullpath = fullpath
         self.dynamic = False
 
         # We will eventually want imported and exported symbols
@@ -16,9 +17,10 @@ class ElfFile:
         self._needed = []
         self._runpath = []
         self._rpath = []
+        self._soname = None
 
         # Try reading as ELF (will raise exception if fails
-        self.fd = open(filename, "rb")
+        self.fd = open(realpath, "rb")
         self.elf = elftools.elf.elffile.ELFFile(self.fd)
         self.header = self.elf.header
 
@@ -53,6 +55,14 @@ class ElfFile:
                 if tag.runpath not in self._runpath:
                     self._runpath.append(tag.runpath)
         return self._runpath
+
+    @property
+    def soname(self):
+        if not self._soname:
+            for tag in self.yield_tag("DT_SONAME"):
+                if tag.soname:
+                    self._soname = tag.soname
+        return self._soname
 
     @property
     def needed(self):
