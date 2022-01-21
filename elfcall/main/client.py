@@ -66,15 +66,14 @@ class BinaryInterface:
         self.reset()
         self.ld.parse()
 
-        # TODO will we ever want to match:
-        # e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],
-        # e_machine, e_type, e_flags and e_version.
-        # https://github.com/vsoch/elfcall/issues/1
-
-        results = self.recursive_find(binary)
+        # Load original binary - we need to match elf attributes here
+        original = elf.ElfFile(binary)
+        results = self.recursive_find(binary, original=original)
         self.library_tree(results)
 
-    def recursive_find(self, lib, root=None, needed_search=None, seen=None, level=0):
+    def recursive_find(
+        self, lib, original, root=None, needed_search=None, seen=None, level=0
+    ):
         """
         recursively find needed paths, keep track of hierarchy
         """
@@ -113,6 +112,10 @@ class BinaryInterface:
 
                 libelf, src, already_seen = self.find_library(path, search_paths)
 
+                # If it does not match the arch and elf type, ignore
+                if not original.matches(libelf):
+                    continue
+
                 # We might get back a soname instead we've already seen
                 if already_seen:
                     continue
@@ -149,6 +152,7 @@ class BinaryInterface:
                 root=next["root"],
                 needed_search=next["needed"],
                 level=next["level"],
+                original=original,
             )
 
         return root
@@ -257,6 +261,10 @@ class BinaryInterface:
                 # This will return loaded ELF, if found, otherwise None
                 libelf, _, already_seen = self.find_library(path, search_paths)
 
+                # If it does not match the arch and elf type, ignore
+                if not e.matches(libelf):
+                    continue
+
                 # We might get back a soname instead we've already seen
                 if already_seen:
                     continue
@@ -277,7 +285,13 @@ class BinaryInterface:
                 for name, symbol in imported.items():
                     if name in exported_contenders:
                         logger.debug("Found %s -> %s" % (name, path))
-                        found[name] = {"lib": lib, "linked_libs": libelf.needed}
+                        found[name] = {
+                            "lib": {
+                                "realpath": libelf.realpath,
+                                "fullpath": libelf.fullpath,
+                            },
+                            "linked_libs": libelf.needed,
+                        }
                         found[name].update(symbol)
                         to_removes.append(name)
                 for to_remove in to_removes:

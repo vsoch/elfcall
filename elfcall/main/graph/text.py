@@ -22,8 +22,8 @@ class Console(GraphBase):
 
 class Text(GraphBase):
     def generate(self):
-        logger.info("Output will be written to %s" % self.outfile)
         if self.outfile != sys.stdout:
+            logger.info("Output will be written to %s" % self.outfile)
             fd = open(self.outfile, "w")
         else:
             fd = self.outfile
@@ -31,7 +31,7 @@ class Text(GraphBase):
         # Record linked dependencies
         for filename, symbols in self.organized.items():
             for linked_lib in self.linked_libs[filename]:
-                fd.write("%s LINKSWITH %s\n" % (filename, linked_lib))
+                fd.write("{:50} {:20} {}\n".format(filename, "LINKSWITH", linked_lib))
 
         # We only care about each library imports (exported from another)
         exported = self.get_exported()
@@ -40,14 +40,13 @@ class Text(GraphBase):
         for symbol in exported:
             placeholder = self.generate_placeholder()
             self.symbol_uids[symbol[0]] = placeholder
-            fd.write("%s EXPORTS %s\n" % (filename, symbol[0]))
 
         # store which files use which symbols
         for filename, metas in self.organized.items():
             for meta in metas:
                 symbol = meta["name"]
                 placeholder = self.symbol_uids[symbol]
-                fd.write("%s USES %s\n" % (filename, symbol))
+                fd.write("{:50} {:20} {}\n".format(filename, "EXPORTS", symbol))
 
         if self.outfile != sys.stdout:
             fd.close()

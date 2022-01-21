@@ -61,6 +61,14 @@ def get_parser():
         description="generate the symbol callgraph.",
         formatter_class=argparse.RawTextHelpFormatter,
     )
+    gen.add_argument(
+        "--fmt",
+        "-f",
+        help="graph format to generate",
+        choices=["text", "ge", "gexf", "console"],
+        default="console",
+    )
+
     tree = subparsers.add_parser(
         "tree",
         description="generate a library tree",

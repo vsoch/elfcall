@@ -72,6 +72,22 @@ class ElfFile:
                     self._needed.append(tag.needed)
         return self._needed
 
+    def matches(self, libelf):
+        """
+        Compare an elf to another lib's elf type, arch, and header metadata.
+        Return True if they match, False otherwise.
+        """
+        # Note that including EI_OSABI
+        # e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],
+        for field in ["EI_CLASS", "EI_DATA", "EI_ABIVERSION"]:
+            if self.header["e_ident"][field] != libelf.header["e_ident"][field]:
+                return False
+        # e_machine, e_type, e_flags and e_version.
+        for field in ["e_type", "e_machine", "e_flags", "e_version"]:
+            if self.header[field] != libelf.header[field]:
+                return False
+        return True
+
     @property
     def operating_system(self):
         return self.header["e_ident"]["EI_OSABI"]

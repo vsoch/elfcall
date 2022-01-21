@@ -82,6 +82,21 @@ __cxa_atexit    __cxa_finalize
 
 ```
 
+The defaults above show the console. DIfferent formats are shown below (under development).
+
+#### Text
+
+```bash
+$ elfcall gen data/libfoo.so --fmt text
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libm.so.6
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libc.so.6
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            ld-linux-x86-64.so.2
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libgcc_s.so.1
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitC1Ev
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitD1Ev
+```
+
+
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).
 
@@ -92,19 +107,13 @@ You can also generate a tree of the library paths parsed:
 ```bash
 $ elfcall tree data/libfoo.so
 libstdc++.so.6                 [x86_64-linux-gnu.conf]
-   libm.so.6                   [i386-linux-gnu.conf]
-      libc.so.6                [i386-linux-gnu.conf]
-         ld-linux.so.2         [i386-linux-gnu.conf]
-      ld-linux-x86-64.so.2     [x86_64-linux-gnu.conf]
-      libgcc_s.so.1            [i386-linux-gnu.conf]
+   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]
 ```
 
 or:
 
 ```bash
 $ elfcall tree /usr/bin/vim
-libm.so.6                      [i386-linux-gnu.conf]
-   ld-linux.so.2               [i386-linux-gnu.conf]
 libtinfo.so.6                  [x86_64-linux-gnu.conf]
 libselinux.so.1                [x86_64-linux-gnu.conf]
    libpcre2-8.so.0             [x86_64-linux-gnu.conf]
@@ -117,13 +126,8 @@ libcanberra.so.0               [x86_64-linux-gnu.conf]
    libltdl.so.7                [x86_64-linux-gnu.conf]
 libacl.so.1                    [x86_64-linux-gnu.conf]
 libgpm.so.2                    [x86_64-linux-gnu.conf]
-libdl.so.2                     [i386-linux-gnu.conf]
 libpython3.8.so.1.0            [x86_64-linux-gnu.conf]
    libexpat.so.1               [x86_64-linux-gnu.conf]
-   libz.so.1                   [x86_64-linux-gnu.conf]
-   libutil.so.1                [i386-linux-gnu.conf]
-libpthread.so.0                [i386-linux-gnu.conf]
-libc.so.6                      [i386-linux-gnu.conf]
 ```
 
 
