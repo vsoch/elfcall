@@ -38,8 +38,6 @@ class GraphBase:
             # meta here (lib) is the one exporting e.g., lib -> export -> filename
             for meta in metas:
                 symbol = meta["name"]
-                size = meta["size"]
-                definition = meta["def"]
                 typ = meta["type"]
                 bind = meta["bind"]
                 exported.add((symbol, typ, bind))
@@ -56,6 +54,10 @@ class GraphBase:
             self.organized[meta["lib"]["fullpath"]].append(meta)
             self.uids[meta["lib"]["fullpath"]] = self.generate_placeholder()
             self.linked_libs[meta["lib"]["fullpath"]] = meta["linked_libs"]
+
+        for filename, linked_libs in self.linked_libs.items():
+            for linked_lib in linked_libs:
+                self.uids[linked_lib] = self.generate_placeholder()
 
     def generate_placeholder(self):
         """

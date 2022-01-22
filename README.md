@@ -92,10 +92,18 @@ $ elfcall gen data/libfoo.so --fmt text
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libc.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            ld-linux-x86-64.so.2
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libgcc_s.so.1
+/lib/x86_64-linux-gnu/libc.so.6                    LINKSWITH            ld-linux-x86-64.so.2
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitC1Ev
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitD1Ev
+/lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_finalize
+/lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_atexit
 ```
 
+#### Cypher
+
+```bash
+$ elfcall gen data/libfoo.so --fmt cypher
+```
 
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).
@@ -108,16 +116,20 @@ You can also generate a tree of the library paths parsed:
 $ elfcall tree data/libfoo.so
 libstdc++.so.6                 [x86_64-linux-gnu.conf]
    ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]
+libm.so.6                      [x86_64-linux-gnu.conf]
+libgcc_s.so.1                  [x86_64-linux-gnu.conf]
+libc.so.6                      [x86_64-linux-gnu.conf]
 ```
 
 or:
 
 ```bash
 $ elfcall tree /usr/bin/vim
+libm.so.6                      [x86_64-linux-gnu.conf]
+   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]
 libtinfo.so.6                  [x86_64-linux-gnu.conf]
 libselinux.so.1                [x86_64-linux-gnu.conf]
    libpcre2-8.so.0             [x86_64-linux-gnu.conf]
-   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]
 libcanberra.so.0               [x86_64-linux-gnu.conf]
    libvorbisfile.so.3          [x86_64-linux-gnu.conf]
       libvorbis.so.0           [x86_64-linux-gnu.conf]
@@ -126,10 +138,14 @@ libcanberra.so.0               [x86_64-linux-gnu.conf]
    libltdl.so.7                [x86_64-linux-gnu.conf]
 libacl.so.1                    [x86_64-linux-gnu.conf]
 libgpm.so.2                    [x86_64-linux-gnu.conf]
+libdl.so.2                     [x86_64-linux-gnu.conf]
 libpython3.8.so.1.0            [x86_64-linux-gnu.conf]
    libexpat.so.1               [x86_64-linux-gnu.conf]
+   libz.so.1                   [x86_64-linux-gnu.conf]
+   libutil.so.1                [x86_64-linux-gnu.conf]
+libpthread.so.0                [x86_64-linux-gnu.conf]
+libc.so.6                      [x86_64-linux-gnu.conf]
 ```
-
 
 ## TODO
 
