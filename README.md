@@ -157,6 +157,12 @@ You should see:
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).
 
+#### Gv
+
+```bash
+$ elfcall gen data/libfoo.so --fmt gv
+```
+
 ### 4. Tree
 
 You can also generate a tree of the library paths parsed:

@@ -65,7 +65,7 @@ def get_parser():
         "--fmt",
         "-f",
         help="graph format to generate",
-        choices=["text", "ge", "gexf", "console", "cypher"],
+        choices=["text", "gv", "gexf", "console", "cypher"],
         default="console",
     )
 
