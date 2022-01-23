@@ -95,24 +95,26 @@ $ elfcall gen data/libfoo.so --fmt text
 /home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 /home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /lib/x86_64-linux-gnu/libc.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libm.so.6
-/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libc.so.6
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            /lib/x86_64-linux-gnu/libc.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            ld-linux-x86-64.so.2
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libgcc_s.so.1
 /lib/x86_64-linux-gnu/libc.so.6                    LINKSWITH            ld-linux-x86-64.so.2
-/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_finalize
-/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_atexit
-/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitC1Ev
-/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitD1Ev
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitC1Ev
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitD1Ev
 /lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_finalize
 /lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_atexit
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_finalize
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_atexit
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitC1Ev
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitD1Ev
 ```
 
 For the above, we might be in trouble if the number of `NEEDS` didn't equal the number of `EXPORTS` as we
 would be missing a symbol.
 
 #### Cypher
+
+Cypher is the query format for Neo4j, the graph database.
 
 ```bash
 $ elfcall gen data/libfoo.so --fmt cypher
@@ -157,10 +159,10 @@ You should see:
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).
 
-#### Gv
+#### dot
 
 ```bash
-$ elfcall gen data/libfoo.so --fmt gv
+$ elfcall gen data/libfoo.so --fmt dot
 ```
 
 ### 4. Tree

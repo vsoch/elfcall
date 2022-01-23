@@ -24,126 +24,34 @@ class Cypher(GraphBase):
 
         fd.write("CREATE ")
 
-        # Create the main binary
-        fd.write(
-            "(%s:ELF {name: '%s', label: '%s'}),\n"
-            % (
-                self.uids[self.target["name"]],
-                os.path.basename(self.target["name"]),
-                os.path.basename(self.target["name"]),
-            )
-        )
+        # Create the main binary and linked libs
+        for uid, name, label in self.iter_elf():
+            fd.write("(%s:ELF {name: '%s', label: '%s'}),\n" % (uid, name, label))
 
-        # Create elf for main files and those linked to
-        seen_libs = set()
-        seen_libs.add(self.target["name"])
-        for filename, symbols in self.organized.items():
-            if os.path.basename(filename) in self.fullpaths:
-                filename = self.fullpaths[os.path.basename(filename)]
-            if filename not in seen_libs:
+        # Create each symbol
+        for uid, name, label, symtype in self.iter_symbols():
+            if symtype:
                 fd.write(
-                    "(%s:ELF {name: '%s', label: '%s'}),\n"
-                    % (
-                        self.uids[filename],
-                        os.path.basename(filename),
-                        os.path.basename(filename),
-                    )
+                    "(%s:SYMBOL {name: '%s', label: '%s', type: '%s'}),\n"
+                    % (uid, name, label, symtype)
                 )
-                seen_libs.add(filename)
-
-            # Now Record linked dependencies
-            for linked_lib in self.linked_libs[filename]:
-
-                # linked_libs often are just the basename, but we don't want to add twice
-                # so we store the fullpaths here to resolve to fullpath
-                if linked_lib in self.fullpaths:
-                    linked_lib = self.fullpaths[linked_lib]
-                if linked_lib in seen_libs:
-                    continue
-                seen_libs.add(linked_lib)
+            else:
                 fd.write(
-                    "(%s:ELF {name: '%s', label: '%s'}),\n"
-                    % (
-                        self.uids[linked_lib],
-                        os.path.basename(linked_lib),
-                        os.path.basename(linked_lib),
-                    )
+                    "(%s:SYMBOL {name: '%s', label: '%s'}),\n" % (uid, name, label)
                 )
-                seen_libs.add(linked_lib)
 
-        # Found symbols plus needed imported (not necessarily all are found)
-        imported = self.get_found_imported()
-
-        # Create a node for each symbol
-        seen = set()
-        for symbol in imported:
-            placeholder = self.generate_placeholder()
-            self.symbol_uids[symbol[0]] = placeholder
-            fd.write(
-                "(%s:SYMBOL {name: '%s', label: '%s', type: '%s'}),\n"
-                % (
-                    placeholder,
-                    symbol[0],
-                    symbol[0],
-                    symbol[1],
-                )
-            )
-            seen.add(symbol[0])
-
-        # TODO need to fix this so symbols imported have name and type
-        for symbol in self.target["imported"]:
-            if symbol in seen:
-                continue
-            placeholder = self.generate_placeholder()
-            self.symbol_uids[symbol] = placeholder
-            fd.write(
-                "(%s:SYMBOL {name: '%s', label: '%s'}),\n"
-                % (
-                    placeholder,
-                    symbol,
-                    symbol,
-                )
-            )
-
-        # First record that each filename links with our main binary
-        for filename, symbols in self.organized.items():
-            fd.write(
-                "(%s)-[:LINKSWITH]->(%s),\n"
-                % (
-                    self.uids[self.target["name"]],
-                    self.uids[filename],
-                )
-            )
-
-        # Now Record linked dependencies
-        for filename, symbols in self.organized.items():
-            for linked_lib in self.linked_libs[filename]:
-                if linked_lib in self.fullpaths:
-                    linked_lib = self.fullpaths[linked_lib]
-                fd.write(
-                    "(%s)-[:LINKSWITH]->(%s),\n"
-                    % (
-                        self.uids[filename],
-                        self.uids[linked_lib],
-                    )
-                )
+        # Links to and from main binary and linked libs
+        for _, uidfrom, _, uidto in self.iter_linkswith():
+            fd.write("(%s)-[:LINKSWITH]->(%s),\n" % (uidfrom, uidto))
 
         # Now add symbols for linked dependences
-        # TODO need to handle last comma...
-        for filename, symbols in self.organized.items():
-            for symbol in symbols:
-                placeholder = self.symbol_uids[symbol["name"]]
-                fd.write(
-                    "(%s)-[:EXPORTS]->(%s),\n" % (self.uids[filename], placeholder)
-                )
+        for _, uidfile, _, uidsymbol in self.iter_exports():
+            fd.write("(%s)-[:EXPORTS]->(%s),\n" % (uidfile, uidsymbol))
 
         # Now add needed by main lib
         last = len(self.target["imported"]) - 1
-        for i, symbol in enumerate(self.target["imported"]):
-            placeholder = self.symbol_uids[symbol]
-            fd.write(
-                "(%s)-[:NEEDS]->(%s)" % (self.uids[self.target["name"]], placeholder)
-            )
+        for i, (_, uidfrom, _, neededuid) in enumerate(self.iter_needed()):
+            fd.write("(%s)-[:NEEDS]->(%s)" % (uidfrom, neededuid))
             if i == last:
                 fd.write(";\n")
             else:

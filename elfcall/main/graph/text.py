@@ -8,6 +8,8 @@ from elfcall.logger import logger
 import secrets
 import string
 import sys
+import os
+
 from .base import GraphBase
 
 
@@ -21,36 +23,35 @@ class Console(GraphBase):
 
 
 class Text(GraphBase):
-    def generate(self):
+    def generate(self, include_singles=False):
         if self.outfile != sys.stdout:
             logger.info("Output will be written to %s" % self.outfile)
             fd = open(self.outfile, "w")
         else:
             fd = self.outfile
 
-        # Write binary links first
-        for filename, symbols in self.organized.items():
-            fd.write(
-                "{:50} {:20} {}\n".format(self.target["name"], "LINKSWITH", filename)
-            )
+        # We don't by default print ELF and SYMBOL (it's redundant)
+        if include_singles:
 
-        # Now linked dependencies
-        for filename, symbols in self.organized.items():
-            for linked_lib in self.linked_libs[filename]:
-                fd.write("{:50} {:20} {}\n".format(filename, "LINKSWITH", linked_lib))
+            # Create the main binary and linked libs
+            for uid, name, label in self.iter_elf():
+                fd.write("{:50} {:20}\n".format("ELF", name))
 
-        # Those that are imported by our target are needed
-        for symbol in self.target["imported"]:
-            placeholder = self.generate_placeholder()
-            self.symbol_uids[symbol] = placeholder
-            fd.write("{:50} {:20} {}\n".format(self.target["name"], "NEEDS", symbol))
+            # Create each symbol
+            for uid, name, label, symtype in self.iter_symbols():
+                fd.write("{:50} {:20}\n".format("SYMBOL", name))
 
-        # store which files use which symbols
-        for filename, metas in self.organized.items():
-            for meta in metas:
-                symbol = meta["name"]
-                placeholder = self.symbol_uids[symbol]
-                fd.write("{:50} {:20} {}\n".format(filename, "EXPORTS", symbol))
+        # Links to and from main binary and linked libs
+        for fromlib, _, tolib, _ in self.iter_linkswith():
+            fd.write("{:50} {:20} {}\n".format(fromlib, "LINKSWITH", tolib))
+
+        # Now add symbols for linked dependences
+        for filename, _, symbol, _ in self.iter_exports():
+            fd.write("{:50} {:20} {}\n".format(filename, "EXPORTS", symbol))
+
+        # Now add needed by main lib
+        for filename, _, symbol, _ in self.iter_needed():
+            fd.write("{:50} {:20} {}\n".format(filename, "NEEDS", symbol))
 
         if self.outfile != sys.stdout:
             fd.close()

@@ -89,3 +89,119 @@ class GraphBase:
             ).lower()
             if name not in self.uids and name not in self.symbol_uids:
                 return name
+
+    def iter_linkswith(self):
+        """
+        Yield filename, fileuid, linked_lib, and linked_lib uid
+        """
+        # First record that each filename links with our main binary
+        for filename, symbols in self.organized.items():
+            yield self.target["name"], self.uids[
+                self.target["name"]
+            ], filename, self.uids[filename]
+
+        # Now Record linked dependencies
+        for filename, symbols in self.organized.items():
+            for linked_lib in self.linked_libs[filename]:
+                if linked_lib in self.fullpaths:
+                    linked_lib = self.fullpaths[linked_lib]
+                yield filename, self.uids[filename], linked_lib, self.uids[linked_lib]
+
+    def iter_needed(self):
+        """
+        Yield binary name, uid, symbol name, symbol uid
+        """
+        last = len(self.target["imported"]) - 1
+        for symbol in self.target["imported"]:
+            placeholder = self.symbol_uids[symbol]
+            yield self.target["name"], self.uids[
+                self.target["name"]
+            ], symbol, placeholder
+
+    def iter_exports(self):
+        """
+        Return a list of filename, uid, symbol, and symbol uid
+        """
+        # Now add symbols for linked dependences
+        for filename, symbols in self.organized.items():
+            for symbol in symbols:
+                if symbol["name"] not in self.symbol_uids:
+                    self.symbol_uids[symbol["name"]] = self.generate_placeholder()
+                placeholder = self.symbol_uids[symbol["name"]]
+                yield filename, self.uids[filename], symbol["name"], placeholder
+
+    def iter_symbols(self):
+        """
+        Iterate over symbols and return uid, name, label, and type (if exists)
+        """
+        results = set()
+
+        # Found symbols plus needed imported (not necessarily all are found)
+        imported = self.get_found_imported()
+
+        # Create a node for each symbol
+        seen = set()
+        for symbol in imported:
+            placeholder = self.generate_placeholder()
+            self.symbol_uids[symbol[0]] = placeholder
+            results.add((placeholder, symbol[0], symbol[0], symbol[1]))
+            seen.add(symbol[0])
+
+        # TODO need to fix this so symbols imported have name and type
+        for symbol in self.target["imported"]:
+            if symbol in seen:
+                continue
+            placeholder = self.generate_placeholder()
+            self.symbol_uids[symbol] = placeholder
+            results.add((placeholder, symbol, symbol, None))
+        for result in results:
+            yield result[0], result[1], result[2], result[3]
+
+    def iter_elf(self):
+        """Iterate the uid, name and label for the main binary and libs"""
+        results = set()
+        results.add(
+            (
+                self.uids[self.target["name"]],
+                os.path.basename(self.target["name"]),
+                os.path.basename(self.target["name"]),
+            )
+        )
+
+        # Create elf for main files and those linked to
+        seen_libs = set()
+        seen_libs.add(self.target["name"])
+        for filename, symbols in self.organized.items():
+            if os.path.basename(filename) in self.fullpaths:
+                filename = self.fullpaths[os.path.basename(filename)]
+            if filename not in seen_libs:
+                results.add(
+                    (
+                        self.uids[filename],
+                        os.path.basename(filename),
+                        os.path.basename(filename),
+                    )
+                )
+                seen_libs.add(filename)
+
+            # Now Record linked dependencies
+            for linked_lib in self.linked_libs[filename]:
+
+                # linked_libs often are just the basename, but we don't want to add twice
+                # so we store the fullpaths here to resolve to fullpath
+                if linked_lib in self.fullpaths:
+                    linked_lib = self.fullpaths[linked_lib]
+                if linked_lib in seen_libs:
+                    continue
+                seen_libs.add(linked_lib)
+                results.add(
+                    (
+                        self.uids[linked_lib],
+                        os.path.basename(linked_lib),
+                        os.path.basename(linked_lib),
+                    )
+                )
+                seen_libs.add(linked_lib)
+
+        for result in results:
+            yield result[0], result[1], result[2]
