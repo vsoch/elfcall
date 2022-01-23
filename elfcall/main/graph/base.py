@@ -11,13 +11,13 @@ import sys
 
 
 class GraphBase:
-    def __init__(self, results, outfile=None, targets=None):
+    def __init__(self, target, results, outfile=None):
         self.results = results
         self.uids = {}
         self.symbol_uids = {}
         self.linked_libs = {}
+        self.target = target
         self.parse()
-        self.targets = targets or []
         self._outfile = outfile
 
     @property
@@ -28,9 +28,9 @@ class GraphBase:
             )  # utils.get_tmpfile(prefix="elfcall-", suffix=".txt")
         return self._outfile
 
-    def get_exported(self):
+    def get_found_imported(self):
 
-        exported = set()
+        imported = set()
 
         # filename is the library importing
         for filename, metas in self.organized.items():
@@ -40,14 +40,19 @@ class GraphBase:
                 symbol = meta["name"]
                 typ = meta["type"]
                 bind = meta["bind"]
-                exported.add((symbol, typ, bind))
-        return exported
+                imported.add((symbol, typ, bind))
+        return imported
 
     def parse(self):
         """
         Organize locations by fullpath and linked libs, and generate placeholder names
         """
         self.organized = {}
+
+        # Create placeholder for the main binary of interest
+        self.uids[self.target["name"]] = self.generate_placeholder()
+
+        # And now for linked libs, etc.
         for symbol, meta in self.results.items():
             if meta["lib"]["fullpath"] not in self.organized:
                 self.organized[meta["lib"]["fullpath"]] = []

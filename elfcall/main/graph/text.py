@@ -28,18 +28,22 @@ class Text(GraphBase):
         else:
             fd = self.outfile
 
-        # Record linked dependencies
+        # Write binary links first
+        for filename, symbols in self.organized.items():
+            fd.write(
+                "{:50} {:20} {}\n".format(self.target["name"], "LINKSWITH", filename)
+            )
+
+        # Now linked dependencies
         for filename, symbols in self.organized.items():
             for linked_lib in self.linked_libs[filename]:
                 fd.write("{:50} {:20} {}\n".format(filename, "LINKSWITH", linked_lib))
 
-        # We only care about each library imports (exported from another)
-        exported = self.get_exported()
-
-        # Create a placeholder for each
-        for symbol in exported:
+        # Those that are imported by our target are needed
+        for symbol in self.target["imported"]:
             placeholder = self.generate_placeholder()
-            self.symbol_uids[symbol[0]] = placeholder
+            self.symbol_uids[symbol] = placeholder
+            fd.write("{:50} {:20} {}\n".format(self.target["name"], "NEEDS", symbol))
 
         # store which files use which symbols
         for filename, metas in self.organized.items():

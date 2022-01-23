@@ -61,6 +61,8 @@ __cxa_atexit    __cxa_finalize
 
 ```
 
+The above shows where the undefined symbols in our binary of interest are found.
+Note that this isn't a graph, hence why we don't see any kind of entry for the main binary.
 You can add `--debug` to see what is searched and when symbols are found:
 
 ```bash
@@ -74,30 +76,41 @@ Looking for libc.so.6
 Found __cxa_finalize -> libc.so.6
 Found __cxa_atexit -> libc.so.6
 Looking for ld-linux-x86-64.so.2
-Looking for ld-linux.so.2
 ==/usr/lib/x86_64-linux-gnu/libstdc++.so.6==
 _ZNSt8ios_base4InitC1Ev    _ZNSt8ios_base4InitD1Ev
-==/lib/i386-linux-gnu/libc.so.6==
+==/lib/x86_64-linux-gnu/libc.so.6==
 __cxa_atexit    __cxa_finalize
-
 ```
 
-The defaults above show the console. DIfferent formats are shown below (under development).
+The defaults above show the console. DIfferent formats for graphs are shown below (under development).
 
 #### Text
 
+For text, we will still generate the data as if we are writing nodes and relationships in a graph. This
+means we will see what the binary of interest is linked to, and a logical relationship for symbols and libs -
+one library will export a symbol, and another will need it.
+
 ```bash
 $ elfcall gen data/libfoo.so --fmt text
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /lib/x86_64-linux-gnu/libc.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libm.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libc.so.6
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            ld-linux-x86-64.so.2
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libgcc_s.so.1
 /lib/x86_64-linux-gnu/libc.so.6                    LINKSWITH            ld-linux-x86-64.so.2
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_finalize
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_atexit
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitC1Ev
+/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitD1Ev
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitC1Ev
 /usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitD1Ev
 /lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_finalize
 /lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_atexit
 ```
+
+For the above, we might be in trouble if the number of `NEEDS` didn't equal the number of `EXPORTS` as we
+would be missing a symbol.
 
 #### Cypher
 

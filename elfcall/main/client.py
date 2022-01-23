@@ -7,6 +7,7 @@ import elfcall.main.graph as graph
 import elfcall.main.ld as ld
 import elfcall.main.elf as elf
 
+from copy import deepcopy
 import os
 import re
 import shutil
@@ -181,19 +182,27 @@ class BinaryInterface:
             logger.exit("A binary is required.")
         self.reset()
         self.ld.parse()
-        locations = self.parse_binary(binary)
+        results = self.parse_binary(binary)
+
+        # Results returns locations, imported, and exported
+        locations = results["found"]
+        binary = {
+            "name": binary,
+            "exported": results["exported"],
+            "imported": results["imported"],
+        }
 
         # Select output format (default to console)
         if fmt == "text":
-            out = graph.Text(locations)
+            out = graph.Text(binary, locations)
         elif fmt == "gv":
-            out = graph.Gv(locations)
+            out = graph.Gv(binary, locations)
         elif fmt == "cypher":
-            out = graph.Cypher(locations)
+            out = graph.Cypher(binary, locations)
         elif fmt == "gexf":
-            out = graph.Gexf(locations)
+            out = graph.Gexf(binary, locations)
         else:
-            out = graph.Console(locations)
+            out = graph.Console(binary, locations)
         out.generate()
 
     def get_search_paths(self, e):
@@ -236,6 +245,7 @@ class BinaryInterface:
         # imported should be empty at the end
         imported = e.get_imported_symbols()
         exported = e.get_exported_symbols()
+        results = {"imported": deepcopy(imported), "exported": exported}
         found = {}
 
         # Keep track of levels of needed, we will parse through level 0, 1, etc.
@@ -299,7 +309,9 @@ class BinaryInterface:
                 # Break as soon as we find everything needed!
                 if not imported:
                     break
-        return found
+
+        results["found"] = found
+        return results
 
     def find_library(self, name, paths, match_to=None):
         """
