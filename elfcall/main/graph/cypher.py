@@ -29,16 +29,47 @@ class Cypher(GraphBase):
             "(%s:ELF {name: '%s', label: '%s'}),\n"
             % (
                 self.uids[self.target["name"]],
-                self.target["name"],
+                os.path.basename(self.target["name"]),
                 os.path.basename(self.target["name"]),
             )
         )
 
+        # Create elf for main files and those linked to
+        seen_libs = set()
+        seen_libs.add(self.target["name"])
         for filename, symbols in self.organized.items():
-            fd.write(
-                "(%s:ELF {name: '%s', label: '%s'}),\n"
-                % (self.uids[filename], filename, os.path.basename(filename))
-            )
+            if os.path.basename(filename) in self.fullpaths:
+                filename = self.fullpaths[os.path.basename(filename)]
+            if filename not in seen_libs:
+                fd.write(
+                    "(%s:ELF {name: '%s', label: '%s'}),\n"
+                    % (
+                        self.uids[filename],
+                        os.path.basename(filename),
+                        os.path.basename(filename),
+                    )
+                )
+                seen_libs.add(filename)
+
+            # Now Record linked dependencies
+            for linked_lib in self.linked_libs[filename]:
+
+                # linked_libs often are just the basename, but we don't want to add twice
+                # so we store the fullpaths here to resolve to fullpath
+                if linked_lib in self.fullpaths:
+                    linked_lib = self.fullpaths[linked_lib]
+                if linked_lib in seen_libs:
+                    continue
+                seen_libs.add(linked_lib)
+                fd.write(
+                    "(%s:ELF {name: '%s', label: '%s'}),\n"
+                    % (
+                        self.uids[linked_lib],
+                        os.path.basename(linked_lib),
+                        os.path.basename(linked_lib),
+                    )
+                )
+                seen_libs.add(linked_lib)
 
         # Found symbols plus needed imported (not necessarily all are found)
         imported = self.get_found_imported()
@@ -87,6 +118,8 @@ class Cypher(GraphBase):
         # Now Record linked dependencies
         for filename, symbols in self.organized.items():
             for linked_lib in self.linked_libs[filename]:
+                if linked_lib in self.fullpaths:
+                    linked_lib = self.fullpaths[linked_lib]
                 fd.write(
                     "(%s)-[:LINKSWITH]->(%s),\n"
                     % (
@@ -118,26 +151,3 @@ class Cypher(GraphBase):
 
         if self.outfile != sys.stdout:
             fd.close()
-
-
-"""            
-CREATE (ubbqekvj:ELF {name: '/usr/lib/x86_64-linux-gnu/libstdc++.so.6', label: 'libstdc++.so.6'}),
-       (bhtpddun:SYMBOL {name: '__cxa_finalize', label: '__cxa_finalize', type: 'FUNC'}), 
-       (jsbdirzz:SYMBOL {name: '_ZNSt8ios_base4InitD1Ev', label: '_ZNSt8ios_base4InitD1Ev', type: 'FUNC'}), 
-       (pgrcwngj:SYMBOL {name: '_ZNSt8ios_base4InitC1Ev', label: '_ZNSt8ios_base4InitC1Ev', type: 'FUNC'}), 
-       (neuyhhih:SYMBOL {name: '__cxa_atexit', label: '__cxa_atexit', type: 'FUNC'}),
-       (ubbqekvj)-[:LINKSWITH]->(vygfepln),
-       (ubbqekvj)-[:LINKSWITH]->(luhufmsq),  
-       (ubbqekvj)-[:LINKSWITH]->(minajnwv), 
-       (ubbqekvj)-[:LINKSWITH]->(xavckaxz), 
-       (smajchxe)-[:LINKSWITH]->(minajnwv),
-       (smajchxe)-[:EXPORTS]->(bhtpddun),
-       (smajchxe)-[:EXPORTS]->(jsbdirzz),
-       (smajchxe)-[:EXPORTS]->(neuyhhih),
-       (smajchxe)-[:EXPORTS]->(pgrcwngj),
-       (ubbqekvj)-[:USES]->(pgrcwngj),
-       (ubbqekvj)-[:USES]->(jsbdirzz),
-       (smajchxe)-[:USES]->(bhtpddun),
-       (smajchxe)-[:USES]->(neuyhhih);
-       MATCH (n) RETURN (n)
-"""

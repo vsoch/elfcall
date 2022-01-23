@@ -116,7 +116,43 @@ would be missing a symbol.
 
 ```bash
 $ elfcall gen data/libfoo.so --fmt cypher
+CREATE (omyaovuh:ELF {name: 'libfoo.so', label: 'libfoo.so'}),
+(ilfrbqrc:ELF {name: 'libstdc++.so.6', label: 'libstdc++.so.6'}),
+(vyiefgcr:ELF {name: 'libm.so.6', label: 'libm.so.6'}),
+(gnxoyhkm:ELF {name: 'libc.so.6', label: 'libc.so.6'}),
+(fvynaahi:ELF {name: 'ld-linux-x86-64.so.2', label: 'ld-linux-x86-64.so.2'}),
+(hsrlkhie:ELF {name: 'libgcc_s.so.1', label: 'libgcc_s.so.1'}),
+(kgyffmqn:SYMBOL {name: '__cxa_finalize', label: '__cxa_finalize', type: 'FUNC'}),
+(bieoloch:SYMBOL {name: '_ZNSt8ios_base4InitC1Ev', label: '_ZNSt8ios_base4InitC1Ev', type: 'FUNC'}),
+(owpwqsyl:SYMBOL {name: '__cxa_atexit', label: '__cxa_atexit', type: 'FUNC'}),
+(stndoxns:SYMBOL {name: '_ZNSt8ios_base4InitD1Ev', label: '_ZNSt8ios_base4InitD1Ev', type: 'FUNC'}),
+(omyaovuh)-[:LINKSWITH]->(ilfrbqrc),
+(omyaovuh)-[:LINKSWITH]->(lxtmuvsv),
+(ilfrbqrc)-[:LINKSWITH]->(vyiefgcr),
+(ilfrbqrc)-[:LINKSWITH]->(gnxoyhkm),
+(ilfrbqrc)-[:LINKSWITH]->(fvynaahi),
+(ilfrbqrc)-[:LINKSWITH]->(hsrlkhie),
+(lxtmuvsv)-[:LINKSWITH]->(fvynaahi),
+(ilfrbqrc)-[:EXPORTS]->(bieoloch),
+(ilfrbqrc)-[:EXPORTS]->(stndoxns),
+(lxtmuvsv)-[:EXPORTS]->(kgyffmqn),
+(lxtmuvsv)-[:EXPORTS]->(owpwqsyl),
+(omyaovuh)-[:NEEDS]->(kgyffmqn),
+(omyaovuh)-[:NEEDS]->(owpwqsyl),
+(omyaovuh)-[:NEEDS]->(bieoloch),
+(omyaovuh)-[:NEEDS]->(stndoxns);
 ```
+
+If you test the output in [https://sandbox.neo4j.com/](https://sandbox.neo4j.com/) by first running the code to generate nodes
+and then doing:
+
+```cypher
+MATCH (n) RETURN (n)
+```
+
+You should see:
+
+![docs/assets/img/cypher.png](docs/assets/img/cypher.png)
 
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).

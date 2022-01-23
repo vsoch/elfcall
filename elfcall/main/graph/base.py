@@ -8,6 +8,7 @@ from elfcall.logger import logger
 import secrets
 import string
 import sys
+import os
 
 
 class GraphBase:
@@ -16,6 +17,7 @@ class GraphBase:
         self.uids = {}
         self.symbol_uids = {}
         self.linked_libs = {}
+        self.fullpaths = {}
         self.target = target
         self.parse()
         self._outfile = outfile
@@ -59,6 +61,17 @@ class GraphBase:
             self.organized[meta["lib"]["fullpath"]].append(meta)
             self.uids[meta["lib"]["fullpath"]] = self.generate_placeholder()
             self.linked_libs[meta["lib"]["fullpath"]] = meta["linked_libs"]
+
+            # We only need fullpaths for linked libs (not from needed) to get fullpath
+            basename = os.path.basename(meta["lib"]["fullpath"])
+            if (
+                basename in self.fullpaths
+                and self.fullpaths[basename] != meta["lib"]["fullpath"]
+            ):
+                logger.warning(
+                    "Warning: a library of the same name (and different path) exists, graph output might not be correct."
+                )
+            self.fullpaths[basename] = meta["lib"]["fullpath"]
 
         for filename, linked_libs in self.linked_libs.items():
             for linked_lib in linked_libs:
