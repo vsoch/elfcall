@@ -186,7 +186,7 @@ $ dot -Tpng < data/examples/dot/graph.dot > data/examples/dot/graph.png
 
 That generates this beauty!
 
-![data/examples/dot/graph.png](data/examples/dot/graph.png)
+![https://raw.githubusercontent.com/vsoch/elfcall/main/data/examples/dot/graph.png](https://raw.githubusercontent.com/vsoch/elfcall/main/data/examples/dot/graph.png)
 
 Note that this format isn't great for large graphs.
 
