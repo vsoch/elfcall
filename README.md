@@ -110,7 +110,12 @@ $ elfcall gen data/libfoo.so --fmt text
 ```
 
 For the above, we might be in trouble if the number of `NEEDS` didn't equal the number of `EXPORTS` as we
-would be missing a symbol.
+would be missing a symbol. To pipe to file:
+
+```bash
+$ elfcall gen data/libfoo.so --fmt text > data/examples/text/graph.txt
+```
+
 
 #### Cypher
 
@@ -145,6 +150,12 @@ CREATE (omyaovuh:ELF {name: 'libfoo.so', label: 'libfoo.so'}),
 (omyaovuh)-[:NEEDS]->(stndoxns);
 ```
 
+Pipe to file:
+
+```bash
+$ elfcall gen data/libfoo.so --fmt cypher > data/examples/cypher/graph.cypher
+```
+
 If you test the output in [https://sandbox.neo4j.com/](https://sandbox.neo4j.com/) by first running the code to generate nodes
 and then doing:
 
@@ -164,6 +175,18 @@ options (right now we print to the screen).
 ```bash
 $ elfcall gen data/libfoo.so --fmt dot
 ```
+
+And here is how to generate a png or svg:
+
+```bash
+$ elfcall gen data/libfoo.so --fmt dot > data/examples/dot/graph.dot
+$ dot -Tpng < data/examples/dot/graph.dot > data/examples/dot/graph.png
+```
+
+That generates (and don't worry I'll add colors soon!)
+
+![data/examples/dot/graph.png](data/examples/dot/graph.png)
+
 
 ### 4. Tree
 
@@ -206,6 +229,7 @@ libc.so.6                      [x86_64-linux-gnu.conf]
 
 ## TODO
 
+ - add colors to dot
  - test each of graph generations, add to client
  - logo for library
  - nice documentation

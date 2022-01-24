@@ -1,0 +1,29 @@
+digraph linked_libs {
+ ratio=0.562;
+ kbijlxqk [label="libc.so.6" tooltip="libc.so.6"];
+ mbsjaupi [label="libfoo.so" tooltip="libfoo.so"];
+ hnoyhrry [label="libgcc_s.so.1" tooltip="libgcc_s.so.1"];
+ sqvnnvtf [label="libstdc++.so.6" tooltip="libstdc++.so.6"];
+ qgptymub [label="libm.so.6" tooltip="libm.so.6"];
+ znlyfbqr [label="ld-linux-x86-64.so.2" tooltip="ld-linux-x86-64.so.2"];
+ nnsntbzl [label="_ZNSt8ios_base4InitC1Ev" tooltip="_ZNSt8ios_base4InitC1Ev (FUNC)"];
+ rrvdolhc [label="__cxa_finalize" tooltip="__cxa_finalize (FUNC)"];
+ encnjfid [label="_ZNSt8ios_base4InitD1Ev" tooltip="_ZNSt8ios_base4InitD1Ev (FUNC)"];
+ gomjwglj [label="__cxa_atexit" tooltip="__cxa_atexit (FUNC)"];
+ mbsjaupi -> sqvnnvtf [label=" links with " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> /usr/lib/x86_64-linux-gnu/libstdc++.so.6"];
+ mbsjaupi -> kbijlxqk [label=" links with " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> /lib/x86_64-linux-gnu/libc.so.6"];
+ sqvnnvtf -> qgptymub [label=" links with " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> libm.so.6"];
+ sqvnnvtf -> kbijlxqk [label=" links with " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> /lib/x86_64-linux-gnu/libc.so.6"];
+ sqvnnvtf -> znlyfbqr [label=" links with " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> ld-linux-x86-64.so.2"];
+ sqvnnvtf -> hnoyhrry [label=" links with " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> libgcc_s.so.1"];
+ kbijlxqk -> znlyfbqr [label=" links with " tooltip="/lib/x86_64-linux-gnu/libc.so.6 -> ld-linux-x86-64.so.2"];
+ sqvnnvtf -> nnsntbzl [label=" exports " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> _ZNSt8ios_base4InitC1Ev (nnsntbzl)"];
+ sqvnnvtf -> encnjfid [label=" exports " tooltip="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> _ZNSt8ios_base4InitD1Ev (encnjfid)"];
+ kbijlxqk -> rrvdolhc [label=" exports " tooltip="/lib/x86_64-linux-gnu/libc.so.6 -> __cxa_finalize (rrvdolhc)"];
+ kbijlxqk -> gomjwglj [label=" exports " tooltip="/lib/x86_64-linux-gnu/libc.so.6 -> __cxa_atexit (gomjwglj)"];
+ mbsjaupi -> rrvdolhc [label=" uses " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> __cxa_finalize"];
+ mbsjaupi -> gomjwglj [label=" uses " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> __cxa_atexit"];
+ mbsjaupi -> nnsntbzl [label=" uses " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> _ZNSt8ios_base4InitC1Ev"];
+ mbsjaupi -> encnjfid [label=" uses " tooltip="/home/vanessa/Desktop/Code/elfcall/data/libfoo.so -> _ZNSt8ios_base4InitD1Ev"];
+
+}

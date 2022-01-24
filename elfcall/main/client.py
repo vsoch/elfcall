@@ -196,7 +196,7 @@ class BinaryInterface:
         if fmt == "text":
             out = graph.Text(binary, locations)
         elif fmt == "dot":
-            out = graph.Gv(binary, locations)
+            out = graph.Dot(binary, locations)
         elif fmt == "cypher":
             out = graph.Cypher(binary, locations)
         elif fmt == "gexf":
