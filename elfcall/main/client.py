@@ -9,9 +9,6 @@ import elfcall.main.elf as elf
 
 from copy import deepcopy
 import os
-import re
-import shutil
-import sys
 
 
 class BinaryInterface:
@@ -259,9 +256,6 @@ class BinaryInterface:
 
         # Keep track of libraries we've seen
         seen = set()
-
-        # also keep track of linked libraries (e.g., which has needed)
-        linked_libs = {}
 
         # First look for libraries in DT_NEEDED on ld.paths
         while needed_search:

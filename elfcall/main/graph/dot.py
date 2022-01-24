@@ -3,12 +3,9 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 
-import elfcall.utils as utils
 from elfcall.logger import logger
-import secrets
-import string
+import random
 import sys
-import os
 
 from .base import GraphBase
 
@@ -18,7 +15,7 @@ class Dot(GraphBase):
     The dot format is for graphviz
     """
 
-    def generate(self, graphname=None, fontname=None):
+    def generate(self, graphname=None, fontname="Arial"):
         if self.outfile != sys.stdout:
             logger.info("Output will be written to %s" % self.outfile)
             fd = open(self.outfile, "w")
@@ -29,20 +26,38 @@ class Dot(GraphBase):
         fd.write("digraph " + graphname + " {\n ratio=0.562;\n")
 
         # Do we want to render using a certain font?
-        if fontname is not None:
-            for node in ["graph", "node", "edge"]:
-                fd.write(" " + node + ' [fontname="' + fontname + '"];\n')
+        for node in ["graph", "node", "edge"]:
+            fd.write(" " + node + ' [fontname="' + fontname + '"];\n')
+
+        # Color for root (first) and then linked libs, and symbols
+        colors = [
+            "#" + "".join([random.choice("0123456789ABCDEF") for j in range(6)])
+            for i in range(3)
+        ]
+
+        root_color = colors.pop()
+        linked_color = colors.pop()
+        symbol_color = colors.pop()
 
         # Create the main binary and linked libs
-        for uid, name, label in self.iter_elf():
-            fd.write(' %s [label="%s" tooltip="%s"];\n' % (uid, label, name))
+        for i, (uid, name, label) in enumerate(self.iter_elf()):
+            if i == 0:
+                fd.write(
+                    ' %s [label="%s" tooltip="%s", style=filled, color="%s"];\n'
+                    % (uid, label, name, root_color)
+                )
+            else:
+                fd.write(
+                    ' %s [label="%s" tooltip="%s", style=filled, color="%s"];\n'
+                    % (uid, label, name, linked_color)
+                )
 
         # Create each symbol
         for uid, name, label, symtype in self.iter_symbols():
             if symtype:
                 fd.write(
-                    ' %s [label="%s" tooltip="%s (%s)"];\n'
-                    % (uid, label, name, symtype)
+                    ' %s [label="%s" tooltip="%s (%s)", style=filled, color="%s"];\n'
+                    % (uid, label, name, symtype, symbol_color)
                 )
             else:
                 fd.write(' %s [label="%s" tooltip="%s"];\n' % (uid, label, name))

@@ -5,10 +5,7 @@ __license__ = "GPL-3.0"
 
 import elfcall.utils as utils
 from elfcall.logger import logger
-import secrets
-import string
 import sys
-import os
 
 from .base import GraphBase
 

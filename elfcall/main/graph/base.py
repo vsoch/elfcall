@@ -3,7 +3,6 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 
-import elfcall.utils as utils
 from elfcall.logger import logger
 import secrets
 import string
@@ -111,7 +110,6 @@ class GraphBase:
         """
         Yield binary name, uid, symbol name, symbol uid
         """
-        last = len(self.target["imported"]) - 1
         for symbol in self.target["imported"]:
             placeholder = self.symbol_uids[symbol]
             yield self.target["name"], self.uids[
@@ -159,8 +157,8 @@ class GraphBase:
 
     def iter_elf(self):
         """Iterate the uid, name and label for the main binary and libs"""
-        results = set()
-        results.add(
+        results = []
+        results.append(
             (
                 self.uids[self.target["name"]],
                 os.path.basename(self.target["name"]),
@@ -175,7 +173,7 @@ class GraphBase:
             if os.path.basename(filename) in self.fullpaths:
                 filename = self.fullpaths[os.path.basename(filename)]
             if filename not in seen_libs:
-                results.add(
+                results.append(
                     (
                         self.uids[filename],
                         os.path.basename(filename),
@@ -194,7 +192,7 @@ class GraphBase:
                 if linked_lib in seen_libs:
                     continue
                 seen_libs.add(linked_lib)
-                results.add(
+                results.append(
                     (
                         self.uids[linked_lib],
                         os.path.basename(linked_lib),

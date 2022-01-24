@@ -145,4 +145,4 @@ def run_client():
 
 
 if __name__ == "__main__":
-    run_shpc()
+    run_client()
