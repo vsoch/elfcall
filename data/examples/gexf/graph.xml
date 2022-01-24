@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.1draft" version="1.1" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.1draft http://www.gexf.net/1.1draft/gexf.xsd">
+    <meta lastmodifieddate="2022-01-23">
+        <creator>elfcall</creator>
+        <description>ELF link analysis of /home/vanessa/Desktop/Code/elfcall/data/libfoo.so</description>
+    </meta>
+    <graph defaultedgetype="directed" idtype="string" type="static">
+    <nodes>
+        <node id="zjsbxbkk" label="libfoo.so"/>
+        <node id="ahqlidml" label="libstdc++.so.6"/>
+        <node id="abqalbwx" label="libm.so.6"/>
+        <node id="vwlddpjl" label="libc.so.6"/>
+        <node id="bevodbyn" label="ld-linux-x86-64.so.2"/>
+        <node id="ecwxkpum" label="libgcc_s.so.1"/>
+        <node id="roaasuqc" label="_ZNSt8ios_base4InitD1Ev"/>
+        <node id="uqjectyq" label="_ZNSt8ios_base4InitC1Ev"/>
+        <node id="isbaehfx" label="__cxa_atexit"/>
+        <node id="mysisvgp" label="__cxa_finalize"/>
+    </nodes>
+    <edges>
+        <edge id="zjsbxbkkahqlidml" source="zjsbxbkk" target="ahqlidml" label="links with"/>
+        <edge id="zjsbxbkkvwlddpjl" source="zjsbxbkk" target="vwlddpjl" label="links with"/>
+        <edge id="ahqlidmlabqalbwx" source="ahqlidml" target="abqalbwx" label="links with"/>
+        <edge id="ahqlidmlvwlddpjl" source="ahqlidml" target="vwlddpjl" label="links with"/>
+        <edge id="ahqlidmlbevodbyn" source="ahqlidml" target="bevodbyn" label="links with"/>
+        <edge id="ahqlidmlecwxkpum" source="ahqlidml" target="ecwxkpum" label="links with"/>
+        <edge id="vwlddpjlbevodbyn" source="vwlddpjl" target="bevodbyn" label="links with"/>
+        <edge source="ahqlidml" target="uqjectyq" label="exports"/>
+        <edge source="ahqlidml" target="roaasuqc" label="exports"/>
+        <edge source="vwlddpjl" target="mysisvgp" label="exports"/>
+        <edge source="vwlddpjl" target="isbaehfx" label="exports"/>
+        <edge source="zjsbxbkk" target="mysisvgp" label="uses"/>
+        <edge source="zjsbxbkk" target="isbaehfx" label="uses"/>
+        <edge source="zjsbxbkk" target="uqjectyq" label="uses"/>
+        <edge source="zjsbxbkk" target="roaasuqc" label="uses"/>
+    </edges>
+</graph>
+</gexf>

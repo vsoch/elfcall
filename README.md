@@ -229,9 +229,37 @@ libpthread.so.0                [x86_64-linux-gnu.conf]
 libc.so.6                      [x86_64-linux-gnu.conf]
 ```
 
+### 5. Gexf (NetworkX)
+
+If you want to use networkX or [a viewer](https://github.com/raphv/gexf-js)
+you can generate output as follows:
+
+```bash
+$ elfcall gen data/libfoo.so --fmt gexf
+$ elfcall gen data/libfoo.so --fmt gexf > data/examples/gexf/graph.xml
+```
+
+You can use as follows:
+
+```bash
+$ here=$PWD
+$ cd /tmp
+$ git clone https://github.com/raphv/gexf-js
+$ cd gexf-js
+
+# The file we generated above, we copy over the example so we don't have 
+# to edit config.js
+$ cp $here/data/examples/gexf/graph.xml miserables.gexf
+```
+And then run the server!
+
+```bash
+$ python -m http.server 9999
+```
+
+
 ## TODO
 
- - add colors to dot
  - test each of graph generations, add to client
  - logo for library
  - nice documentation
