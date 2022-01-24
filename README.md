@@ -166,7 +166,7 @@ MATCH (n) RETURN (n)
 
 You should see:
 
-![docs/assets/img/cypher.png](docs/assets/img/cypher.png)
+![data/examples/cypher/graph.png](data/examples/cypher/graph.png)
 
 Note that this is under development, and eventually we will have different graph generation
 options (right now we print to the screen).
