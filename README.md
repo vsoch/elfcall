@@ -154,6 +154,7 @@ Pipe to file:
 
 ```bash
 $ elfcall gen data/libfoo.so --fmt cypher > data/examples/cypher/graph.cypher
+$ elfcall gen /usr/bin/vim --fmt cypher > data/examples/cypher/graph-vim.cypher
 ```
 
 If you test the output in [https://sandbox.neo4j.com/](https://sandbox.neo4j.com/) by first running the code to generate nodes
@@ -183,10 +184,11 @@ $ elfcall gen data/libfoo.so --fmt dot > data/examples/dot/graph.dot
 $ dot -Tpng < data/examples/dot/graph.dot > data/examples/dot/graph.png
 ```
 
-That generates (and don't worry I'll add colors soon!)
+That generates this beauty!
 
 ![data/examples/dot/graph.png](data/examples/dot/graph.png)
 
+Note that this format isn't great for large graphs.
 
 ### 4. Tree
 

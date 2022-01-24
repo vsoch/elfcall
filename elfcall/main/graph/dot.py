@@ -90,7 +90,7 @@ class Dot(GraphBase):
         # Now add needed by main lib
         for filename, uidfrom, needed, neededuid in self.iter_needed():
             fd.write(
-                ' %s -> %s [label=" uses " tooltip="%s -> %s"];\n'
+                ' %s -> %s [label=" needs " tooltip="%s -> %s"];\n'
                 % (uidfrom, neededuid, filename, needed)
             )
 
