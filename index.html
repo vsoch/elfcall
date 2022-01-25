@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elfcall &mdash; elfcall 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sphinx-argparse.css" type="text/css" />
+      <link rel="stylesheet" href="_static/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> elfcall
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference/elfcall.html">Elfcall API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference/internal/modules.html">Internal API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">elfcall</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Elfcall</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="elfcall">
+<span id="manual-main"></span><h1>Elfcall<a class="headerlink" href="#elfcall" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://github.com/vsoch/elfcall/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/vsoch/elfcall?style=social" /></a>
+<p>Generate call graph data for an elf binary.</p>
+<p>Elfcall performs two functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>trees</em>: generate a tree of libraries akin to what the dynamic linker would see</li>
+<li><em>graphs</em>: generate a graph that shows linked libraries and symbols exported and needed.</li>
+</ul>
+</div></blockquote>
+<p>For the graphs, there are several different output formats (text, cypher for Neo4j, Dot, and gexf for Gephi or NetworkX).</p>
+<div class="section" id="how-does-it-work">
+<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Permalink to this headline"></a></h2>
+<p>On a high level, it works by way of extracting symbols from the ELF, and figuring out dependencies
+via links and RPATH, and then outputting data to file. An important contribution by way of
+developing this library is also trying to document the process, which I found only vaguely
+documented in several places. Previous art of interested that inspired me to work on this:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/armijnhemel/conference-talks/blob/master/fsfe2013/fsfe2013.pdf">This talk</a> that gives a good high level overview.</li>
+<li><a class="reference external" href="https://github.com/haampie/libtree">libtree</a> which I couldn’t easily go off of because I’m not an expert in C or C++.</li>
+<li><a class="reference external" href="https://git.osadl.org/ckresse/callgraph">callgraph</a> inspired me for the graphs, but I wanted a slightly more organized implementation.</li>
+</ul>
+</div></blockquote>
+<p>Background material about the method can be found in <a class="reference external" href="https://lwn.net/Articles/548216/">this article</a>
+and you can learn more about ELF from any of these sources:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">https://en.wikipedia.org/wiki/Executable_and_Linkable_Format</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Weak_symbol">https://en.wikipedia.org/wiki/Weak_symbol</a></li>
+<li><a class="reference external" href="https://refspecs.linuxbase.org/elf/elf.pdf">https://refspecs.linuxbase.org/elf/elf.pdf</a></li>
+<li><a class="reference external" href="https://android.googlesource.com/platform/art/+/master/runtime/elf.h">https://android.googlesource.com/platform/art/+/master/runtime/elf.h</a></li>
+<li><a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html">https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html</a></li>
+</ul>
+</div></blockquote>
+<p>And this is helpful for understanding the dynamic linker:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section">https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section</a></li>
+</ul>
+</div></blockquote>
+<p>To see the code, head over to the <a class="reference external" href="https://github.com/vsoch/elfcall/">repository</a>.</p>
+<div class="section" id="getting-started-with-elfcall">
+<span id="main-getting-started"></span><h3>Getting started with Elfcall<a class="headerlink" href="#getting-started-with-elfcall" title="Permalink to this headline"></a></h3>
+<p>Elfcall can be installed from pypi or directly from the repository. See <a class="reference internal" href="getting_started/installation.html#getting-started-installation"><span class="std std-ref">Installation</span></a> for
+installation, and then the <a class="reference internal" href="getting_started/index.html#getting-started"><span class="std std-ref">Getting Started</span></a> section for using elfcall on the command line.</p>
+</div>
+<div class="section" id="support">
+<span id="main-support"></span><h3>Support<a class="headerlink" href="#support" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li>For <strong>bugs and feature requests</strong>, please use the <a class="reference external" href="https://github.com/vsoch/elfcall/issues">issue tracker</a>.</li>
+<li>For <strong>contributions</strong>, visit Spliced on <a class="reference external" href="https://github.com/vsoch/elfcall">Github</a>.</li>
+</ul>
+</div>
+<div class="section" id="resources">
+<h3>Resources<a class="headerlink" href="#resources" title="Permalink to this headline"></a></h3>
+<dl class="docutils">
+<dt><a class="reference external" href="https://github.com/vsoch/elfcall">GitHub Repository</a></dt><dd>The code on GitHub.</dd>
+</dl>
+<div class="toctree-wrapper compound" id="getting-started">
+</div>
+<div class="toctree-wrapper compound" id="api-reference">
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started/index.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Vanessa Sochat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

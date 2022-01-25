@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background &mdash; elfcall 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Getting Started" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> elfcall
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#elf">Elf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-linking">Dynamic Linking</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#how-does-the-process-work">How does the process work?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/elfcall.html">Elfcall API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/internal/modules.html">Internal API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">elfcall</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Getting Started</a> &raquo;</li>
+      <li>Background</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/getting_started/background.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="background">
+<span id="getting-started-background"></span><h1>Background<a class="headerlink" href="#background" title="Permalink to this headline"></a></h1>
+<p>I found these related libraries:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/haampie/libtree">libtree</a> which I couldn’t easily go off of because I’m not an expert in C or C++.</li>
+<li><a class="reference external" href="https://git.osadl.org/ckresse/callgraph">callgraph</a> inspired me for the graphs, but I wanted a slightly more organized implementation.</li>
+</ul>
+</div></blockquote>
+<p>And wasn’t happy that there wasn’t at least a high level description of what is going on.
+I was also less interested in the graph generation, and more interested in the content of the graph for export or use
+elsewhere. I also found the UI interaction to be confusing and wanted to refactor.
+Thus, elfcall was a weekend project that would also be useful for my current role,
+and I decided to run with it. Elfcall is a combination of “ELF” and then “callgraph.”</p>
+<div class="section" id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
+<div class="section" id="elf">
+<h3>Elf<a class="headerlink" href="#elf" title="Permalink to this headline"></a></h3>
+<p>Elf means the “Executable and Linkable Format” and it’s the most widely used format of binary on Linux (at least for the time being).
+When you run an ELF executable, you are allowed to perform what is called
+“dynamic linking” - or finding other libraries at run time to create your final executable program.</p>
+</div>
+<div class="section" id="dynamic-linking">
+<h3>Dynamic Linking<a class="headerlink" href="#dynamic-linking" title="Permalink to this headline"></a></h3>
+<p>The basic idea behind dynamic linking is that other libraries might have functions we want to use.
+Instead of redundantly including them in our binary, we can link to them. This means that we can reduce
+the amount of memory we need to use, more easily upgrade programs that use a specific library,
+and overall use less disk space. But in terms of an application binary interface, it does mean
+that we can lead to hairy issues if, for example, the binary interface changes between
+two versions of a linked library. Don’t do that.</p>
+<div class="section" id="how-does-the-process-work">
+<h4>How does the process work?<a class="headerlink" href="#how-does-the-process-work" title="Permalink to this headline"></a></h4>
+<p>On a high level we:</p>
+<ol class="arabic simple">
+<li>Figure out symbols that are needed (undefined) for a binary of interest.</li>
+<li>Start parsing the NEEDED libraries in the binary ELF header to look for the symbols.</li>
+<li>Recursively look for symbols that the library needs.</li>
+</ol>
+<p>It’s the job of the dynamic linked to start with this list of needed libraries and
+search across the system to find contenders and symbols. This is pretty high levle, so
+I wanted to write at least a stepwise understanding of what is going on.</p>
+<div class="section" id="choosing-a-binary-of-interest">
+<h5>1. Choosing a Binary of Interest<a class="headerlink" href="#choosing-a-binary-of-interest" title="Permalink to this headline"></a></h5>
+<p>We first choose a binary of interest. It can be a library (<code class="docutils literal notranslate"><span class="pre">libfoo.so</span></code>) or an executable (<code class="docutils literal notranslate"><span class="pre">/usr/bin/vim</span></code>).</p>
+</div>
+<div class="section" id="verify-elf">
+<h5>2. Verify ELF<a class="headerlink" href="#verify-elf" title="Permalink to this headline"></a></h5>
+<p>We then read in our binary and check that it’s ELF. This is fairly easy to do and there are different parsers for different languages. For Python there is <a class="reference external" href="https://github.com/eliben/pyelftools">pyelftools</a> used here, and <a class="reference external" href="https://pkg.go.dev/debug/elf">debug/elf</a> in golang, which I used in <a class="reference external" href="https://github.com/vsoch/gosmeagle">gosmeagle</a>.
+For dynamic linking to work, the ELF needs to have a <a class="reference external" href="https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-42444.html">dynamic section</a> so we check for that.</p>
+</div>
+<div class="section" id="undefined-symbols">
+<h5>3. Undefined Symbols<a class="headerlink" href="#undefined-symbols" title="Permalink to this headline"></a></h5>
+<p>If you are just generating a search tree, you can probably skip this step. But for the most part you need to find undefined symbols, where the type is <code class="docutils literal notranslate"><span class="pre">UND</span></code>.
+This typically means that the symbol needs to be provided by a linked library. To find symbols, you can iterate through the ELF sections,
+and find the <a class="reference external" href="https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-79797.html">Symbol Table</a> section. For each symbol (per the documentation) you can
+find a size, a type, binding, and other metadata. For the most part for other projects I’ve been interested in the function type (<code class="docutils literal notranslate"><span class="pre">STT_FUNC</span></code>) and object (<code class="docutils literal notranslate"><span class="pre">STT_OBJ</span></code>)
+but I don’t do special filtering to eliminate them here.</p>
+</div>
+<div class="section" id="prepare-to-parse-needed">
+<h5>3. Prepare to Parse NEEDED<a class="headerlink" href="#prepare-to-parse-needed" title="Permalink to this headline"></a></h5>
+<p>Our task is to find all the symbols that the library needs. They are going to be found in dependencies that are known via the ELF header.
+So we then start with the needed dependencies <code class="docutils literal notranslate"><span class="pre">DT_NEEDED</span></code> from the binary of interest’s header (a list of library names)
+and add them to a list of lists, let’s call this <code class="docutils literal notranslate"><span class="pre">needed_search</span></code>. We will pop off the first list and continue in a breadth first fashion,
+looking at the original binary needed before we look at any found libraries needed dependencies.
+This can be done recursively, or by appending a new list to a list of lists, and continuing until you have an empty list. See <a class="reference external" href="https://github.com/vsoch/elfcall/blob/076b6586c8fdf6a3de77ba099c42150e002d944f/elfcall/main/client.py#L102">this part</a> of the code for an example.</p>
+<blockquote>
+<div><ul class="simple">
+<li>While we do this, we keep track of a set of seen names, which should be either the soname, or if the soname is not defined, the library name from the needed header. As we proceed, if we hit a library that we’ve seen before, we don’t search it again. This also prevents us from looping!</li>
+<li>Implementation wise, this means the first call to the function will find that <code class="docutils literal notranslate"><span class="pre">needed_search</span></code> is None (or similar) and we set it to be a the main binary list of needed names inside of a list. Otherwise, we just append the new library we are searching ‘s needed to the current list of <code class="docutils literal notranslate"><span class="pre">needed_search</span></code>.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="library-search-paths">
+<h5>4. Library Search Paths<a class="headerlink" href="#library-search-paths" title="Permalink to this headline"></a></h5>
+<p>For each path we find in needed, we first check if we’ve seen it before (it’s in the set of seen) and if so, we continue and skip it.
+Given a library name, we then perform a search for the library,
+and this has a very specific algorithm too that are specific to the ELF we are searching for.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Case 1: If we have a <code class="docutils literal notranslate"><span class="pre">DT_RPATH</span></code> and <code class="docutils literal notranslate"><span class="pre">DT_RUNPATH</span></code>, search paths include:
+- <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>
+- Parsed runpath
+- ld configuration file paths
+- default paths as determined by the system / ABI</li>
+<li>Case 2: If we only have <code class="docutils literal notranslate"><span class="pre">DT_RPATH</span></code> search paths include:
+- Parsed rpath
+- <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>
+- ld configuration file paths
+- default paths as determined by the system / ABI</li>
+<li>Case 3: If we only have <code class="docutils literal notranslate"><span class="pre">DT_RUNPATH</span></code> search pathsare the same as case 1.</li>
+</ul>
+</div></blockquote>
+<p>Note that this  is for Linux and I’m aware of variation with, for example, musl.
+For <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> (from the environment) and <code class="docutils literal notranslate"><span class="pre">RPATH</span></code> and <code class="docutils literal notranslate"><span class="pre">RUNPATH</span></code> from the ELF, you will typically get a set of paths
+separated by colons <code class="docutils literal notranslate"><span class="pre">:</span></code> or <code class="docutils literal notranslate"><span class="pre">;</span></code> to parse. In the case you see an empty entry, e.g., “/path/A:” that typically indicates adding the
+present working directory. As far as I understand, the colon and semicolon are interchangeable.</p>
+<p>For the configuration files, we first look for either <code class="docutils literal notranslate"><span class="pre">/etc/ld.so.conf</span></code> and <code class="docutils literal notranslate"><span class="pre">/etc/ld-elf.so.conf</span></code> and for each that we find,
+we parse the config file. Parsing means:</p>
+<ol class="arabic simple">
+<li>Reading the file line by line (split by newline)</li>
+<li>Skip empty lines and those that start with <code class="docutils literal notranslate"><span class="pre">#</span></code> (comments)</li>
+<li>If the line starts with include, this is providing another configuration pattern to parse. Remove the “include” and then parse the remaining patter. In Python I use <code class="docutils literal notranslate"><span class="pre">glob.glob</span></code> to get the actual files matching the path or pattern. For each file, recursively call the same function to parse it.</li>
+<li>If you get to the end of the loop and you haven’t hit one of the above cases, the line has a library path (append it to your main list)</li>
+<li>I also keep a lookup of which config file a library came from so I can report it with the tree (not required).</li>
+</ol>
+<p>For the above, you can <a class="reference external" href="https://github.com/vsoch/elfcall/blob/076b6586c8fdf6a3de77ba099c42150e002d944f/elfcall/main/ld.py#L38">see the function here</a>.
+For default paths, I have hard coded the following for linux:</p>
+<blockquote>
+<div><ul class="simple">
+<li>/lib</li>
+<li>/lib64</li>
+<li>/usr/lib</li>
+<li>usr/lib64</li>
+</ul>
+</div></blockquote>
+<p>For all of the above, the paths you search are going to depend on the ELF you are parsing (e.g., first the original binary of interest, and then a library that you find from it).</p>
+<p><strong>Note I’m still looking into different envars that should be added here</strong></p>
+</div>
+<div class="section" id="find-libraries">
+<h5>5. Find Libraries<a class="headerlink" href="#find-libraries" title="Permalink to this headline"></a></h5>
+<p>Once you have your search paths, our goal is to find the library we are looking for! There are likely a few derivations of how you can do this,
+of course with some rules required no matter what, and here is what I did.</p>
+<ol class="arabic simple">
+<li>Any time we find a library, we keep a cache or lookup of the path based on the soname. If the library doesn’t have a soname, we use the path. This means that later in the search we won’t search for the same thing again. It also means if you have the same soname for different libraries, you aren’t going to see the second one.</li>
+<li>Firstly, if the path has a slash in it, we usually don’t search and use the path verbatim. For my tool I’m checking for existence first, although I haven’t read that is required. Basically, the dynamic linker sees the slash and uses the string directly as the path name.</li>
+<li>If the path doesn’t have a slash, we then look in the library cache to see if we’ve already found the soname. If yes, we return the associated path. I also return the source (from my source cache) and if we’ve seen it before (a boolean). E.g., returning at this point would be True, and in the higher level search we would not parse the same library again looking for symbols.</li>
+<li>If we haven’t seen it, we then start looping through the search paths as determined in step 4. For this step, I also keep a cache of files found in search directories, in the case that we’ve seen one before. if not, I parse the directory.</li>
+<li>Directory parsing is what you’d expect - we do an os.walk to assemble full paths, exclude broken links, resolve symbolic links, and filter to only include files. One thing I’m not sure about is if we can have repeated libraries of the same basename. This might be a bug in my implementation, but I only include the first found basename, and remember the realpath and fullpath. Note that this might need rethinking and be an edge case of finding the same library (with the same name) in two places and truly wanting to use both.</li>
+<li>Once we have a listing of files, we “test” each one by loading into ELF. We skip anything that isn’t elf.</li>
+<li>Finally, we do a match to the original binary. We need to check header values for each of <code class="docutils literal notranslate"><span class="pre">EI_CLASS</span></code>, <code class="docutils literal notranslate"><span class="pre">EI_DATA</span></code>, <code class="docutils literal notranslate"><span class="pre">EI_ABIVERSION</span></code> and <code class="docutils literal notranslate"><span class="pre">e_machine</span></code>, <code class="docutils literal notranslate"><span class="pre">e_type</span></code>, <code class="docutils literal notranslate"><span class="pre">e_flags</span></code>, and <code class="docutils literal notranslate"><span class="pre">e_version</span></code> for equality. If they are different (and don’t match) we skip.</li>
+<li>Finally, once we have a definitive library from the path that indeed is a matching ELF, we add its path (by soname) to the library cache. We return the same ELF, path, and False to say that “we haven’t seen this one before.”</li>
+</ol>
+</div>
+<div class="section" id="parse-symbols">
+<h5>6. Parse Symbols<a class="headerlink" href="#parse-symbols" title="Permalink to this headline"></a></h5>
+<p>Back in the main loop, if we have seen the library before, continue and don’t parse it again. If we are looking for symbols, then at this point
+you want to get symbols that the library exports and compare to the set of imports for the binary in question. You can cross any off the list that are found
+and assign them to the library (e.g., I remove from the original list of symbols that need to be found for import and add a record to found symbols,
+which includes the path of the library where I found it first. If you are just generating a tree, then you can create some reprsentation of the node,
+e.g., I include the level it was found, the source, paths, and name and a space for children:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Keep record of what we found!</span>
+<span class="n">node</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+        <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">libelf</span><span class="o">.</span><span class="n">fullpath</span><span class="p">),</span>
+       <span class="p">}</span>
+<span class="n">node</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;realpath&quot;</span><span class="p">:</span> <span class="n">libelf</span><span class="o">.</span><span class="n">realpath</span><span class="p">,</span> <span class="s2">&quot;fullpath&quot;</span><span class="p">:</span> <span class="n">libelf</span><span class="o">.</span><span class="n">fullpath</span><span class="p">})</span>
+<span class="n">root</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then a key is to append the needed libs for the library you found to some list to parse _after_ you are done with this needed set.
+That is going to look different depending on ifyou’ve done this recursively or with some kind of while statement. Ultimately you will
+want to call the same search function, but target the “root” node to be the children of each node you just added.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="nb">next</span> <span class="ow">in</span> <span class="n">next_parsed</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">recursive_find</span><span class="p">(</span>
+        <span class="nb">next</span><span class="p">[</span><span class="s2">&quot;lib&quot;</span><span class="p">],</span>
+        <span class="n">root</span><span class="o">=</span><span class="nb">next</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">],</span>
+        <span class="n">needed_search</span><span class="o">=</span><span class="nb">next</span><span class="p">[</span><span class="s2">&quot;needed&quot;</span><span class="p">],</span>
+        <span class="n">level</span><span class="o">=</span><span class="nb">next</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">],</span>
+        <span class="n">original</span><span class="o">=</span><span class="n">original</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>The implementation is really up to you! This is just how I happened to do it.</p>
+</div>
+<div class="section" id="final-result">
+<h5>7. Final Result<a class="headerlink" href="#final-result" title="Permalink to this headline"></a></h5>
+<p>When this recursion or while is finished, you’ll either have a nested tree (starting from the root binary) of linked libraries
+found, or a similar result but also including symbols. In elftree I can probably improve upon my implementation because I have both
+functions (one recursive one not) and use the same functions for both, and this was only because it’s more convenient to keep
+the list of symbols I’m looking for in one function. But arguably I can refactor to just pass the symbols as an argument in the recursion.
+Honestly, I left the non-recursive version because I think it can be easier to understand for some.</p>
+<p><strong>NOTE</strong> I am still adding details to these notes!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Vanessa Sochat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

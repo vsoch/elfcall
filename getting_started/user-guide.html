@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Guide &mdash; elfcall 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Elfcall API" href="../api_reference/elfcall.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> elfcall
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gen">Gen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#console">console</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text">text</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cypher">cypher</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dot">dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gexf-networkx">Gexf (NetworkX)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tree">Tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/elfcall.html">Elfcall API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/internal/modules.html">Internal API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">elfcall</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Getting Started</a> &raquo;</li>
+      <li>User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/getting_started/user-guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="user-guide">
+<span id="getting-started-user-guide"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline"></a></h1>
+<div class="section" id="commands">
+<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline"></a></h2>
+<p>Elfcall provides the following sub-commands via the <code class="docutils literal notranslate"><span class="pre">elfcall</span></code> command line client.</p>
+<div class="section" id="gen">
+<h3>Gen<a class="headerlink" href="#gen" title="Permalink to this headline"></a></h3>
+<p>Gen is used to generate a symbol graph. This is arguably not going to be the best visualization for
+really large trees, however in this case you likely want to use the client to generate
+the same graph (we will show both). First, let’s combine some example code from
+the repository (shown how to clone in <a class="reference internal" href="installation.html#getting-started-installation"><span class="std std-ref">Installation</span></a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd data/</span>
+<span class="go">make</span>
+<span class="go">cd ../</span>
+</pre></div>
+</div>
+<p>This will generate <code class="docutils literal notranslate"><span class="pre">data/libfoo.so</span></code>, a small library we can use for demonstration.</p>
+<div class="section" id="console">
+<h4>console<a class="headerlink" href="#console" title="Permalink to this headline"></a></h4>
+<p>The default output prints to the console. Let’s run gen and see what happens!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so
+</pre></div>
+</div>
+<p>The output is basic in that you will see the linked library followed by undefined symbols we needed.
+It’s implied that these are needed symbols of <code class="docutils literal notranslate"><span class="pre">libfoo.so</span></code>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so
+<span class="go">==/usr/lib/x86_64-linux-gnu/libstdc++.so.6==</span>
+<span class="go">_ZNSt8ios_base4InitC1Ev    _ZNSt8ios_base4InitD1Ev</span>
+<span class="go">==/lib/i386-linux-gnu/libc.so.6==</span>
+<span class="go">__cxa_atexit    __cxa_finalize</span>
+</pre></div>
+</div>
+<p>The above shows where the undefined symbols in our binary of interest are found.
+Note that this isn’t a graph, hence why we don’t see any kind of entry for the main binary.
+You can add <code class="docutils literal notranslate"><span class="pre">--debug</span></code> to see what is searched and when symbols are found:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall --debug gen data/libfoo.so
+<span class="go">Looking for libstdc++.so.6</span>
+<span class="go">Found _ZNSt8ios_base4InitC1Ev -&gt; libstdc++.so.6</span>
+<span class="go">Found _ZNSt8ios_base4InitD1Ev -&gt; libstdc++.so.6</span>
+<span class="go">Looking for libm.so.6</span>
+<span class="go">Looking for libgcc_s.so.1</span>
+<span class="go">Looking for libc.so.6</span>
+<span class="go">Found __cxa_finalize -&gt; libc.so.6</span>
+<span class="go">Found __cxa_atexit -&gt; libc.so.6</span>
+<span class="go">Looking for ld-linux-x86-64.so.2</span>
+<span class="go">==/usr/lib/x86_64-linux-gnu/libstdc++.so.6==</span>
+<span class="go">_ZNSt8ios_base4InitC1Ev    _ZNSt8ios_base4InitD1Ev</span>
+<span class="go">==/lib/x86_64-linux-gnu/libc.so.6==</span>
+<span class="go">__cxa_atexit    __cxa_finalize</span>
+</pre></div>
+</div>
+<p>This is actually the default output “format” for gen - printing to the console. There
+are dIfferent formats for graphs are shown below. To do this same generation in Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">elfcall.main</span> <span class="kn">import</span> <span class="n">BinaryInterface</span>
+<span class="n">cli</span> <span class="o">=</span> <span class="n">BinaryInterface</span><span class="p">(</span><span class="s2">&quot;data/libfoo.so&quot;</span><span class="p">)</span>
+
+<span class="c1"># These are the same</span>
+<span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+<span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;console&quot;</span><span class="p">)</span>
+
+<span class="c1"># Instead of printing, get json output</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cli</span><span class="o">.</span><span class="n">gen_output</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The output “results” will have sets of imported and exported symbols, and then a lookup of what is found
+and where. Note that this output is consistent between all graph types, hence why the output format is
+not needed.</p>
+</div>
+<div class="section" id="text">
+<h4>text<a class="headerlink" href="#text" title="Permalink to this headline"></a></h4>
+<p>Text output is akin to console, but we are explicitly printing basic entities for a graph.
+We are generating the data as if we are writing nodes and relationships in a graph, and (from Python)
+there is even an optional boolean to indicate we want to see ELF and SYMBOL entries on their own (default is False). This
+means we will see what the binary of interest is linked to, and a logical relationship for symbols and libs -
+one library will export a symbol, and another will need it.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt text
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /usr/lib/x86_64-linux-gnu/libstdc++.so.6</span>
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  LINKSWITH            /lib/x86_64-linux-gnu/libc.so.6</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libm.so.6</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            /lib/x86_64-linux-gnu/libc.so.6</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            ld-linux-x86-64.so.2</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           LINKSWITH            libgcc_s.so.1</span>
+<span class="go">/lib/x86_64-linux-gnu/libc.so.6                    LINKSWITH            ld-linux-x86-64.so.2</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitC1Ev</span>
+<span class="go">/usr/lib/x86_64-linux-gnu/libstdc++.so.6           EXPORTS              _ZNSt8ios_base4InitD1Ev</span>
+<span class="go">/lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_finalize</span>
+<span class="go">/lib/x86_64-linux-gnu/libc.so.6                    EXPORTS              __cxa_atexit</span>
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_finalize</span>
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                __cxa_atexit</span>
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitC1Ev</span>
+<span class="go">/home/vanessa/Desktop/Code/elfcall/data/libfoo.so  NEEDS                _ZNSt8ios_base4InitD1Ev</span>
+</pre></div>
+</div>
+<p>For the above, we might be in trouble if the number of <code class="docutils literal notranslate"><span class="pre">NEEDS</span></code> didn’t equal the number of <code class="docutils literal notranslate"><span class="pre">EXPORTS</span></code> as we
+would be missing a symbol. To pipe to file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt text &gt; data/examples/text/graph.txt
+</pre></div>
+</div>
+<p>From within Python you might do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">elfcall.main</span> <span class="kn">import</span> <span class="n">BinaryInterface</span>
+<span class="n">cli</span> <span class="o">=</span> <span class="n">BinaryInterface</span><span class="p">(</span><span class="s2">&quot;data/libfoo.so&quot;</span><span class="p">)</span>
+<span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cypher">
+<h4>cypher<a class="headerlink" href="#cypher" title="Permalink to this headline"></a></h4>
+<p>Cypher is the query format for Neo4j, the graph database.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt cypher
+<span class="go">CREATE (omyaovuh:ELF {name: &#39;libfoo.so&#39;, label: &#39;libfoo.so&#39;}),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc:ELF {name: &#39;libstdc++.so.6&#39;, label: &#39;libstdc++.so.6&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(vyiefgcr:ELF {name: &#39;libm.so.6&#39;, label: &#39;libm.so.6&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(gnxoyhkm:ELF {name: &#39;libc.so.6&#39;, label: &#39;libc.so.6&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(fvynaahi:ELF {name: &#39;ld-linux-x86-64.so.2&#39;, label: &#39;ld-linux-x86-64.so.2&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(hsrlkhie:ELF {name: &#39;libgcc_s.so.1&#39;, label: &#39;libgcc_s.so.1&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(kgyffmqn:SYMBOL {name: &#39;__cxa_finalize&#39;, label: &#39;__cxa_finalize&#39;, type: &#39;FUNC&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(bieoloch:SYMBOL {name: &#39;_ZNSt8ios_base4InitC1Ev&#39;, label: &#39;_ZNSt8ios_base4InitC1Ev&#39;, type: &#39;FUNC&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(owpwqsyl:SYMBOL {name: &#39;__cxa_atexit&#39;, label: &#39;__cxa_atexit&#39;, type: &#39;FUNC&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(stndoxns:SYMBOL {name: &#39;_ZNSt8ios_base4InitD1Ev&#39;, label: &#39;_ZNSt8ios_base4InitD1Ev&#39;, type: &#39;FUNC&#39;})</span><span class="go">,</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:LINKSWITH]-&gt;(ilfrbqrc),</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:LINKSWITH]-&gt;(lxtmuvsv),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:LINKSWITH]-&gt;(vyiefgcr),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:LINKSWITH]-&gt;(gnxoyhkm),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:LINKSWITH]-&gt;(fvynaahi),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:LINKSWITH]-&gt;(hsrlkhie),</span>
+<span class="gp gp-VirtualEnv">(lxtmuvsv)</span><span class="go">-[:LINKSWITH]-&gt;(fvynaahi),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:EXPORTS]-&gt;(bieoloch),</span>
+<span class="gp gp-VirtualEnv">(ilfrbqrc)</span><span class="go">-[:EXPORTS]-&gt;(stndoxns),</span>
+<span class="gp gp-VirtualEnv">(lxtmuvsv)</span><span class="go">-[:EXPORTS]-&gt;(kgyffmqn),</span>
+<span class="gp gp-VirtualEnv">(lxtmuvsv)</span><span class="go">-[:EXPORTS]-&gt;(owpwqsyl),</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:NEEDS]-&gt;(kgyffmqn),</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:NEEDS]-&gt;(owpwqsyl),</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:NEEDS]-&gt;(bieoloch),</span>
+<span class="gp gp-VirtualEnv">(omyaovuh)</span><span class="go">-[:NEEDS]-&gt;(stndoxns);</span>
+</pre></div>
+</div>
+<p>What you are seeing above is a definition of node and relationships.
+You can pipe to file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt cypher &gt; data/examples/cypher/graph.cypher
+<span class="gp">$ </span>elfcall gen /usr/bin/vim --fmt cypher &gt; data/examples/cypher/graph-vim.cypher
+</pre></div>
+</div>
+<p>If you test the output in <a class="reference external" href="https://sandbox.neo4j.com/">the Neo4J sandbox</a> by first running the code to generate nodes
+and then doing:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">MATCH (n) RETURN (n)</span>
+</pre></div>
+</div>
+<p>You should see:</p>
+<img alt="Cypher Graph" src="https://raw.githubusercontent.com/vsoch/elfcall/main/data/examples/cypher/graph.png" />
+<p>From within Python you might do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">elfcall.main</span> <span class="kn">import</span> <span class="n">BinaryInterface</span>
+<span class="n">cli</span> <span class="o">=</span> <span class="n">BinaryInterface</span><span class="p">(</span><span class="s2">&quot;data/libfoo.so&quot;</span><span class="p">)</span>
+<span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dot">
+<h4>dot<a class="headerlink" href="#dot" title="Permalink to this headline"></a></h4>
+<p>Dot is probably one of my favorite because you can use the <a class="reference external" href="https://linux.die.net/man/1/dot">dot</a> command line tool to make pretty
+beautiful plots!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt dot
+</pre></div>
+</div>
+<p>And here is how to generate a png or svg:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt dot &gt; data/examples/dot/graph.dot
+<span class="gp">$ </span>dot -Tpng &lt; data/examples/dot/graph.dot &gt; data/examples/dot/graph.png
+<span class="gp">$ </span>dot -Tsvg &lt; data/examples/dot/graph.dot &gt; data/examples/dot/graph.svg
+</pre></div>
+</div>
+<p>That generates this beauty!</p>
+<img alt="Dot Graph" src="https://raw.githubusercontent.com/vsoch/elfcall/main/data/examples/dot/graph.png" />
+<p>Note that this format isn’t great for large graphs.</p>
+</div>
+<div class="section" id="gexf-networkx">
+<h4>Gexf (NetworkX)<a class="headerlink" href="#gexf-networkx" title="Permalink to this headline"></a></h4>
+<p>If you want to use networkX or Gephi or <a class="reference external" href="https://github.com/raphv/gexf-js">a viewer</a> you can generate output as follows:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt gexf
+<span class="gp">$ </span>elfcall gen data/libfoo.so --fmt gexf &gt; data/examples/gexf/graph.xml
+</pre></div>
+</div>
+<p>To use the viewer, you’ll first need to import into Gephi so the nodes have added
+spatial information. Without this information, you won’t see them in the UI.
+You can then do the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span>$ here=$PWD
+$ cd /tmp
+$ git clone https://github.com/raphv/gexf-js
+$ cd gexf-js
+
+# The file we generated above, we copy over the example so we don&#39;t have
+# to edit config.js
+$ cp $here/data/examples/gexf/graph.xml miserables.gexf
+</pre></div>
+</div>
+<p>And then run the server!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python -m http.server <span class="m">9999</span>
+</pre></div>
+</div>
+<p>As an alternative, <a class="reference external" href="https://networkx.org/documentation/stable/tutorial.html">networkx</a> can also read in the gexf file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_gexf</span><span class="p">(</span><span class="s1">&#39;data/examples/gexf/graph.xml&#39;</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="tree">
+<h3>Tree<a class="headerlink" href="#tree" title="Permalink to this headline"></a></h3>
+<p>Elfcall also lets you generate a tree of the library paths parsed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall tree data/libfoo.so
+<span class="go">libstdc++.so.6                 [x86_64-linux-gnu.conf]</span>
+<span class="go">   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]</span>
+<span class="go">libm.so.6                      [x86_64-linux-gnu.conf]</span>
+<span class="go">libgcc_s.so.1                  [x86_64-linux-gnu.conf]</span>
+<span class="go">libc.so.6                      [x86_64-linux-gnu.conf]</span>
+</pre></div>
+</div>
+<p>Notice the right column, the source of finding a file? This is the source lookup I was talking about in
+<a class="reference internal" href="background.html#getting-started-background"><span class="std std-ref">Background</span></a>.</p>
+<p>or:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall tree /usr/bin/vim
+<span class="go">libm.so.6                      [x86_64-linux-gnu.conf]</span>
+<span class="go">   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]</span>
+<span class="go">libtinfo.so.6                  [x86_64-linux-gnu.conf]</span>
+<span class="go">libselinux.so.1                [x86_64-linux-gnu.conf]</span>
+<span class="go">   libpcre2-8.so.0             [x86_64-linux-gnu.conf]</span>
+<span class="go">libcanberra.so.0               [x86_64-linux-gnu.conf]</span>
+<span class="go">   libvorbisfile.so.3          [x86_64-linux-gnu.conf]</span>
+<span class="go">      libvorbis.so.0           [x86_64-linux-gnu.conf]</span>
+<span class="go">      libogg.so.0              [x86_64-linux-gnu.conf]</span>
+<span class="go">   libtdb.so.1                 [x86_64-linux-gnu.conf]</span>
+<span class="go">   libltdl.so.7                [x86_64-linux-gnu.conf]</span>
+<span class="go">libacl.so.1                    [x86_64-linux-gnu.conf]</span>
+<span class="go">libgpm.so.2                    [x86_64-linux-gnu.conf]</span>
+<span class="go">libdl.so.2                     [x86_64-linux-gnu.conf]</span>
+<span class="go">libpython3.8.so.1.0            [x86_64-linux-gnu.conf]</span>
+<span class="go">   libexpat.so.1               [x86_64-linux-gnu.conf]</span>
+<span class="go">   libz.so.1                   [x86_64-linux-gnu.conf]</span>
+<span class="go">   libutil.so.1                [x86_64-linux-gnu.conf]</span>
+<span class="go">libpthread.so.0                [x86_64-linux-gnu.conf]</span>
+<span class="go">libc.so.6                      [x86_64-linux-gnu.conf]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api_reference/elfcall.html" class="btn btn-neutral float-right" title="Elfcall API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Vanessa Sochat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
