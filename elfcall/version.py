@@ -4,6 +4,7 @@ __license__ = "GPL-3.0"
 
 __version__ = "0.0.0"
 AUTHOR = "Vanessa Sochat"
+EMAIL = "vsoch@users.noreply.github.io"
 NAME = "elfcall"
 PACKAGE_URL = "https://github.com/vsoch/elfcall"
 KEYWORDS = "ELF, callgraph"

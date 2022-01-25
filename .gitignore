@@ -1,4 +1,6 @@
 __pycache__
+dist
+docs/_build
 .env
 env/
 data/foo-exec

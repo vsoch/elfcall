@@ -2,6 +2,7 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
+import elfcall.utils as utils
 import elftools.elf.elffile
 
 
@@ -45,7 +46,7 @@ class ElfFile:
         if not self._rpath:
             for tag in self.yield_tag("DT_RPATH"):
                 if tag.rpath not in self._rpath:
-                    self._rpath.append(tag.rpath)
+                    self._rpath += utils.iter_splitpath(tag.rpath)
         return self._rpath
 
     @property
@@ -53,7 +54,7 @@ class ElfFile:
         if not self._runpath:
             for tag in self.yield_tag("DT_RUNPATH"):
                 if tag.runpath not in self._runpath:
-                    self._runpath.append(tag.runpath)
+                    self._runpath += utils.iter_splitpath(tag.runpath)
         return self._runpath
 
     @property

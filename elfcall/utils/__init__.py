@@ -4,6 +4,7 @@ from .terminal import (
     which,
     colify,
     confirm_action,
+    iter_split_path,
 )
 from .fileio import (
     copyfile,

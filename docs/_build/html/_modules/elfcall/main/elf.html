@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>elfcall.main.elf &mdash; elfcall 0.0.0 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> elfcall
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference/elfcall.html">Elfcall API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference/internal/modules.html">Internal API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">elfcall</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>elfcall.main.elf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for elfcall.main.elf</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Vanessa Sochat&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2022, Vanessa Sochat&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;GPL-3.0&quot;</span>
+
+<span class="kn">import</span> <span class="nn">elfcall.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">elftools.elf.elffile</span>
+
+
+<div class="viewcode-block" id="ElfFile"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile">[docs]</a><span class="k">class</span> <span class="nc">ElfFile</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">realpath</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">realpath</span> <span class="o">=</span> <span class="n">realpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullpath</span> <span class="o">=</span> <span class="n">fullpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dynamic</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># We will eventually want imported and exported symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_needed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runpath</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rpath</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_soname</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Try reading as ELF (will raise exception if fails</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">realpath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elf</span> <span class="o">=</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">elffile</span><span class="o">.</span><span class="n">ELFFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">header</span>
+
+        <span class="c1"># We are primarily interested in dynamic elf</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">dynamic</span><span class="o">.</span><span class="n">DynamicSection</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dynamicelf</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ElfFile.yield_tag"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.yield_tag">[docs]</a>    <span class="k">def</span> <span class="nf">yield_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">dynamic</span><span class="o">.</span><span class="n">DynamicSection</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">iter_tags</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">d_tag</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">tag</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpath</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_tag</span><span class="p">(</span><span class="s2">&quot;DT_RPATH&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">rpath</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpath</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_rpath</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">iter_splitpath</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">rpath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpath</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">runpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runpath</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_tag</span><span class="p">(</span><span class="s2">&quot;DT_RUNPATH&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">runpath</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runpath</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_runpath</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">iter_splitpath</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">runpath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runpath</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">soname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soname</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_tag</span><span class="p">(</span><span class="s2">&quot;DT_SONAME&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">soname</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_soname</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">soname</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soname</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">needed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needed</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_tag</span><span class="p">(</span><span class="s2">&quot;DT_NEEDED&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">needed</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needed</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_needed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">needed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needed</span>
+
+<div class="viewcode-block" id="ElfFile.matches"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.matches">[docs]</a>    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libelf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare an elf to another lib&#39;s elf type, arch, and header metadata.</span>
+<span class="sd">        Return True if they match, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note that including EI_OSABI</span>
+        <span class="c1"># e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;EI_CLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;EI_DATA&quot;</span><span class="p">,</span> <span class="s2">&quot;EI_ABIVERSION&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_ident&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]</span> <span class="o">!=</span> <span class="n">libelf</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_ident&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># e_machine, e_type, e_flags and e_version.</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;e_type&quot;</span><span class="p">,</span> <span class="s2">&quot;e_machine&quot;</span><span class="p">,</span> <span class="s2">&quot;e_flags&quot;</span><span class="p">,</span> <span class="s2">&quot;e_version&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">!=</span> <span class="n">libelf</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">operating_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_ident&quot;</span><span class="p">][</span><span class="s2">&quot;EI_OSABI&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">arch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_machine&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">endian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">little_endian</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">elfcls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">elfclass</span>
+
+<div class="viewcode-block" id="ElfFile.get_imported_symbols"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.get_imported_symbols">[docs]</a>    <span class="k">def</span> <span class="nf">get_imported_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_group_symbols</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span></div>
+
+<div class="viewcode-block" id="ElfFile.get_exported_symbols"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.get_exported_symbols">[docs]</a>    <span class="k">def</span> <span class="nf">get_exported_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_group_symbols</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span></div>
+
+    <span class="k">def</span> <span class="nf">_group_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate through symbols and put into imported and exported&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_symbols</span><span class="p">():</span>
+
+            <span class="c1"># Strip compiler @@ versions?</span>
+            <span class="k">if</span> <span class="s2">&quot;@@&quot;</span> <span class="ow">in</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;def&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SHN_UNDEF&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span><span class="p">[</span><span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">symbol</span>
+            <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">[</span><span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">symbol</span>
+
+<div class="viewcode-block" id="ElfFile.iter_symbols"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.iter_symbols">[docs]</a>    <span class="k">def</span> <span class="nf">iter_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">SymbolTableSection</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">iter_symbols</span><span class="p">():</span>
+                    <span class="n">store</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_size&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_shndx&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;SHN_UNDEF&quot;</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STT_NOTYPE&quot;</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;bind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STB_LOCAL&quot;</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_shndx&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SHN_ABS&quot;</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># Name and size</span>
+                    <span class="n">store</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">store</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_size&quot;</span><span class="p">]</span>
+                    <span class="n">store</span><span class="p">[</span><span class="s2">&quot;def&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_shndx&quot;</span><span class="p">]</span>
+
+                    <span class="c1"># Type</span>
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STT_FUNC&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FUNC&quot;</span>
+                    <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STT_OBJECT&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OBJECT&quot;</span>
+                    <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STT_LOOS&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FUNC&quot;</span>
+                    <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STT_TLS&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;DATA&quot;</span>
+
+                    <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;bind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STB_WEAK&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;bind&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;WEAK&quot;</span>
+                    <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;st_info&quot;</span><span class="p">][</span><span class="s2">&quot;bind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;STB_GLOBAL&quot;</span><span class="p">:</span>
+                        <span class="n">store</span><span class="p">[</span><span class="s2">&quot;bind&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;GLOBAL&quot;</span>
+                    <span class="k">yield</span> <span class="n">store</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Vanessa Sochat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

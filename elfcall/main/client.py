@@ -170,7 +170,7 @@ class BinaryInterface:
         for result in results:
             parse_result(result)
 
-    def gen(self, binary=None, fmt=None):
+    def gen_output(self, binary=None):
         """
         Generate a graph of symbols (e.g., where everything is found)
         """
@@ -179,7 +179,14 @@ class BinaryInterface:
             logger.exit("A binary is required.")
         self.reset()
         self.ld.parse()
-        results = self.parse_binary(binary)
+        return self.parse_binary(binary)
+
+    def gen(self, binary=None, fmt=None):
+        """
+        Generate a graph of symbols (e.g., where everything is found)
+        """
+        binary = binary or self.binary
+        results = self.gen_output(binary)
 
         # Results returns locations, imported, and exported
         locations = results["found"]

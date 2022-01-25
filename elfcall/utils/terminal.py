@@ -4,6 +4,7 @@ __license__ = "GPL-3.0"
 
 from subprocess import Popen, PIPE, STDOUT
 import os
+import re
 
 
 def colify(listing):
@@ -14,6 +15,22 @@ def colify(listing):
             listing[::4], listing[1::4], listing[2::3], listing[3::4]
         ):
             print("{:<20}{:<20}{:<20}{:<}".format(a, b, c, d))
+
+
+def iter_split_path(path):
+    """
+    Given a path (e.g., LD_LIBRARY_PATH or DT_RPATH or DT_RUNPATH split into
+    individual paths
+    """
+    # Semicolon treated the same as :
+    path = path.replace(";", ":")
+    paths = []
+    for path in re.split(":", path):
+        if not path:
+            paths.append(os.getcwd())
+        else:
+            paths.append(path)
+    return paths
 
 
 def which(software, strip_newline=True):

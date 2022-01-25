@@ -39,6 +39,7 @@ os.chdir(install_path)
 lookup = get_lookup()
 VERSION = lookup["__version__"]
 NAME = lookup["NAME"]
+EMAIL = lookup["EMAIL"]
 AUTHOR = lookup["AUTHOR"]
 PACKAGE_URL = lookup["PACKAGE_URL"]
 KEYWORDS = lookup["KEYWORDS"]
@@ -66,6 +67,7 @@ if __name__ == "__main__":
         name=NAME,
         version=VERSION,
         author=AUTHOR,
+        author_email=EMAIL,
         maintainer=AUTHOR,
         packages=find_packages(),
         include_package_data=True,
