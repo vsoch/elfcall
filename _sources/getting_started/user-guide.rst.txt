@@ -309,10 +309,17 @@ Elfcall also lets you generate a tree of the library paths parsed:
 
 
 Notice the right column, the source of finding a file? This is the source lookup I was talking about in
-:ref:`getting_started-background`.
+:ref:`getting_started-background`. You can verify needed using ``readelf``:
 
+.. code-block:: console
 
-or:
+    $ readelf -a data/libfoo.so | grep NEEDED
+    0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+    0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+    0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+    0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+
+and here is an example with vim:
 
 .. code-block:: console
 
@@ -337,4 +344,21 @@ or:
        libutil.so.1                [x86_64-linux-gnu.conf]
     libpthread.so.0                [x86_64-linux-gnu.conf]
     libc.so.6                      [x86_64-linux-gnu.conf]
+
+
+And the needed headers:
+
+.. code-block:: console
+
+    $ readelf -a /usr/bin/vim | grep NEEDED
+    0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+    0x0000000000000001 (NEEDED)             Shared library: [libtinfo.so.6]
+    0x0000000000000001 (NEEDED)             Shared library: [libselinux.so.1]
+    0x0000000000000001 (NEEDED)             Shared library: [libcanberra.so.0]
+    0x0000000000000001 (NEEDED)             Shared library: [libacl.so.1]
+    0x0000000000000001 (NEEDED)             Shared library: [libgpm.so.2]
+    0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
+    0x0000000000000001 (NEEDED)             Shared library: [libpython3.8.so.1.0]
+    0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]
+    0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
 

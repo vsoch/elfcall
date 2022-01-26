@@ -156,12 +156,17 @@
 <span class="sd">        Compare an elf to another lib&#39;s elf type, arch, and header metadata.</span>
 <span class="sd">        Return True if they match, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Note that including EI_OSABI</span>
+        <span class="c1"># Note that we aren&#39;t including EI_OSABI because it will not match ELFOSABI_SYSV</span>
+        <span class="c1"># to ELFOSABI_LINUX and it should - ELFOSABI_LINUX was renamed to ELFOSABI_GNU</span>
+        <span class="c1"># See thread https://twitter.com/stabbbles/status/1486107888212975616</span>
+        <span class="c1"># https://stackoverflow.com/questions/19455971/on-linux-abi-in-elf-header-set-to-sys-v-not-linux</span>
         <span class="c1"># e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;EI_CLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;EI_DATA&quot;</span><span class="p">,</span> <span class="s2">&quot;EI_ABIVERSION&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_ident&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]</span> <span class="o">!=</span> <span class="n">libelf</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;e_ident&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="kc">False</span>
+
         <span class="c1"># e_machine, e_type, e_flags and e_version.</span>
+        <span class="c1"># Need to double check these are needed</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;e_type&quot;</span><span class="p">,</span> <span class="s2">&quot;e_machine&quot;</span><span class="p">,</span> <span class="s2">&quot;e_flags&quot;</span><span class="p">,</span> <span class="s2">&quot;e_version&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">!=</span> <span class="n">libelf</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="kc">False</span>

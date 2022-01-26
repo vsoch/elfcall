@@ -313,8 +313,15 @@ $ cp $here/data/examples/gexf/graph.xml miserables.gexf
 </pre></div>
 </div>
 <p>Notice the right column, the source of finding a file? This is the source lookup I was talking about in
-<a class="reference internal" href="background.html#getting-started-background"><span class="std std-ref">Background</span></a>.</p>
-<p>or:</p>
+<a class="reference internal" href="background.html#getting-started-background"><span class="std std-ref">Background</span></a>. You can verify needed using <code class="docutils literal notranslate"><span class="pre">readelf</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>readelf -a data/libfoo.so <span class="p">|</span> grep NEEDED
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span>
+</pre></div>
+</div>
+<p>and here is an example with vim:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall tree /usr/bin/vim
 <span class="go">libm.so.6                      [x86_64-linux-gnu.conf]</span>
 <span class="go">   ld-linux-x86-64.so.2        [x86_64-linux-gnu.conf]</span>
@@ -336,6 +343,20 @@ $ cp $here/data/examples/gexf/graph.xml miserables.gexf
 <span class="go">   libutil.so.1                [x86_64-linux-gnu.conf]</span>
 <span class="go">libpthread.so.0                [x86_64-linux-gnu.conf]</span>
 <span class="go">libc.so.6                      [x86_64-linux-gnu.conf]</span>
+</pre></div>
+</div>
+<p>And the needed headers:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>readelf -a /usr/bin/vim <span class="p">|</span> grep NEEDED
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libtinfo.so.6]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libselinux.so.1]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libcanberra.so.0]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libacl.so.1]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libgpm.so.2]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libpython3.8.so.1.0]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]</span>
+<span class="go">0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span>
 </pre></div>
 </div>
 </div>

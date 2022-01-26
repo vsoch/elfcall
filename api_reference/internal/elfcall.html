@@ -140,13 +140,13 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.client.BinaryInterface.gen">
-<code class="sig-name descname"><span class="pre">gen</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.gen" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname"><span class="pre">gen</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">no_default_libs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.gen" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a graph of symbols (e.g., where everything is found)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.client.BinaryInterface.gen_output">
-<code class="sig-name descname"><span class="pre">gen_output</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.gen_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.gen_output" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname"><span class="pre">gen_output</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">no_default_libs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.gen_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.gen_output" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a graph of symbols (e.g., where everything is found)</p>
 </dd></dl>
 
@@ -188,7 +188,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.client.BinaryInterface.tree">
-<code class="sig-name descname"><span class="pre">tree</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.tree" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname"><span class="pre">tree</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">no_default_libs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/client.html#BinaryInterface.tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.client.BinaryInterface.tree" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a library tree</p>
 </dd></dl>
 
@@ -213,13 +213,28 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="elfcall.main.ld.LibraryParser.in_default_path">
+<code class="sig-name descname"><span class="pre">in_default_path</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/ld.html#LibraryParser.in_default_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.ld.LibraryParser.in_default_path" title="Permalink to this definition"></a></dt>
+<dd><p>In secure mode, we only allow a path from ld preload given that it’s
+in a default path.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="elfcall.main.ld.LibraryParser.ld_preload">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">ld_preload</span></code><a class="headerlink" href="#elfcall.main.ld.LibraryParser.ld_preload" title="Permalink to this definition"></a></dt>
+<dd><p>Parse LD_PRELOAD from the environment and (rarely) a system file</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.ld.LibraryParser.parse">
-<code class="sig-name descname"><span class="pre">parse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/ld.html#LibraryParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.ld.LibraryParser.parse" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<code class="sig-name descname"><span class="pre">parse</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">no_default_libs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/ld.html#LibraryParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.ld.LibraryParser.parse" title="Permalink to this definition"></a></dt>
+<dd><p>Parse paths. We define secure and no default libs here, and arguably
+could support defining it in the init instead.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.ld.LibraryParser.parse_ld_library_path">
-<code class="sig-name descname"><span class="pre">parse_ld_library_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/ld.html#LibraryParser.parse_ld_library_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.ld.LibraryParser.parse_ld_library_path" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname"><span class="pre">parse_ld_library_path</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/ld.html#LibraryParser.parse_ld_library_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.ld.LibraryParser.parse_ld_library_path" title="Permalink to this definition"></a></dt>
 <dd><p>Get LD_LIBRARY_PATH from the environment</p>
 </dd></dl>
 

@@ -132,7 +132,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exist.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.tree"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.tree">[docs]</a>    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.tree"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.tree">[docs]</a>    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a library tree</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -140,7 +140,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">binary</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;A binary is required.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
 
         <span class="c1"># Load original binary - we need to match elf attributes here</span>
         <span class="n">original</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="n">binary</span><span class="p">)</span>
@@ -161,9 +161,10 @@
             <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="c1"># If we don&#39;t have needed or the root, create data structures</span>
+        <span class="c1"># Use binary needed, but LD_PRELOAD comes first</span>
         <span class="k">if</span> <span class="n">root</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">needed_search</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">needed_search</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">]</span>
+            <span class="n">needed_search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">ld_preload</span> <span class="o">+</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">]</span>
 
         <span class="c1"># If we have more needed, at to list</span>
         <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">:</span>
@@ -248,7 +249,7 @@
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="n">parse_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.gen_output"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen_output">[docs]</a>    <span class="k">def</span> <span class="nf">gen_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.gen_output"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen_output">[docs]</a>    <span class="k">def</span> <span class="nf">gen_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a graph of symbols (e.g., where everything is found)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -256,15 +257,17 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">binary</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;A binary is required.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.gen"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.gen"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a graph of symbols (e.g., where everything is found)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">binary</span> <span class="o">=</span> <span class="n">binary</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_output</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_output</span><span class="p">(</span>
+            <span class="n">binary</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span>
+        <span class="p">)</span>
 
         <span class="c1"># Results returns locations, imported, and exported</span>
         <span class="n">locations</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">]</span>
@@ -337,7 +340,8 @@
 
         <span class="c1"># Then at the symbol tables of the DT_NEEDED entries (in order)</span>
         <span class="c1"># and then at the second level DT_NEEDED entries, and so on.</span>
-        <span class="n">needed_search</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">]</span>
+        <span class="c1"># But if LD_PRELOAD is defined, we do that first.</span>
+        <span class="n">needed_search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">ld_preload</span> <span class="o">+</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">]</span>
 
         <span class="c1"># Keep track of libraries we&#39;ve seen</span>
         <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -401,6 +405,7 @@
         <span class="c1"># More rare case - the name is a path and it exists</span>
         <span class="c1"># If a shared object name has one or more slash (/) characters anywhere in the name</span>
         <span class="c1"># the dynamic linker uses that string directly as the path name.</span>
+        <span class="c1"># I also check if it exists although this isn&#39;t stated in ldmanpages.</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">library_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">library_cache</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_cache</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="kc">False</span>
@@ -446,7 +451,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">source_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
                 <span class="k">return</span> <span class="n">libelf</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.parse_dir"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.parse_dir">[docs]</a>    <span class="k">def</span> <span class="nf">parse_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

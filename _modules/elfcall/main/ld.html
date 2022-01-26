@@ -82,21 +82,31 @@
 
 <span class="kn">import</span> <span class="nn">elfcall.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 
 <div class="viewcode-block" id="LibraryParser"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser">[docs]</a><span class="k">class</span> <span class="nc">LibraryParser</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a list of parsed paths&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_lib_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/lib64&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib64&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf_paths</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Keep lookup of where each came from</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_default_libs</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secure</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="LibraryParser.parse"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LibraryParser.parse"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse paths. We define secure and no default libs here, and arguably</span>
+<span class="sd">        could support defining it in the init instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secure</span> <span class="o">=</span> <span class="n">secure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_default_libs</span> <span class="o">=</span> <span class="n">no_default_libs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_ld_so_conf</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_ld_library_path</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_ld_library_path</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LibraryParser.find_source"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.find_source">[docs]</a>    <span class="k">def</span> <span class="nf">find_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -117,6 +127,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recursively parse an ld config file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We skip parsing these files if no default paths are used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_default_libs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -136,20 +149,78 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;lib&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">paths</span>
 
-<div class="viewcode-block" id="LibraryParser.parse_ld_library_path"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.parse_ld_library_path">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ld_library_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LibraryParser.parse_ld_library_path"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.parse_ld_library_path">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ld_library_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get LD_LIBRARY_PATH from the environment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LD_LIBRARY_PATH&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+
+        <span class="c1"># LD_LIBRARY_PATH is used unless the executable is being run in secure-execution mode</span>
+        <span class="c1"># in which case this variable is ignored.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span> <span class="ow">or</span> <span class="n">secure</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">iter_split_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;lib&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;LD_LIBRARY_PATH&quot;</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">paths</span></div>
 
+<div class="viewcode-block" id="LibraryParser.in_default_path"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.in_default_path">[docs]</a>    <span class="k">def</span> <span class="nf">in_default_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        In secure mode, we only allow a path from ld preload given that it&#39;s</span>
+<span class="sd">        in a default path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># I think LD_PRELOAD only loads in default lib search paths?</span>
+        <span class="c1"># TODO dynamic string tokens can also be expanded here</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_lib_paths</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secure</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ld_preload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse LD_PRELOAD from the environment and (rarely) a system file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LD_PRELOAD&quot;</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">paths</span>
+
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">iter_split_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+            <span class="c1"># In secure-execution mode, preload pathnames containing slashes are ignored</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secure</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># only shared objects in the standard search directories that have the set-user-ID mode bit enabled are loaded.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secure</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+                <span class="c1"># It looks like this should be 2048 to be enabled?</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">&amp;</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISUID</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">paths</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_ld_so_preload</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">paths</span>
+
+    <span class="k">def</span> <span class="nf">_parse_ld_so_preload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This gets parsed after LD_PRELOAD environment variable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># File containing a whitespace-separated list of ELF shared objects to be loaded before the program.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/etc/ld.so.preload&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;/etc/ld.so.preload&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paths</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">default_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/lib64&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib64&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_default_libs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_lib_paths</span>
 
 <div class="viewcode-block" id="LibraryParser.set_default_paths"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.set_default_paths">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
