@@ -5,6 +5,7 @@ Generate call graph data for an elf binary.
 This works by way of extracting symbols fromthe ELF, figuring out dependencies
 via links and RPATH, and then outputting data to file.
 
+⭐️ [Documentation](https://vsoch.github.io/elfcall/) ⭐️
 
 ## TODO
 
