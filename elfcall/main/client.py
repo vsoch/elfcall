@@ -54,7 +54,7 @@ class BinaryInterface:
             logger.exit("%s does not exist." % self.binary)
         self.binary = os.path.abspath(self.binary)
 
-    def tree(self, binary=None):
+    def tree(self, binary=None, secure=False, no_default_libs=False):
         """
         Generate a library tree
         """
@@ -62,7 +62,7 @@ class BinaryInterface:
         if not binary:
             logger.exit("A binary is required.")
         self.reset()
-        self.ld.parse()
+        self.ld.parse(secure=secure, no_default_libs=no_default_libs)
 
         # Load original binary - we need to match elf attributes here
         original = elf.ElfFile(os.path.realpath(binary), binary)
@@ -83,9 +83,10 @@ class BinaryInterface:
             seen = set()
 
         # If we don't have needed or the root, create data structures
+        # Use binary needed, but LD_PRELOAD comes first
         if root == None and not needed_search:
             root = []
-            needed_search = [e.needed]
+            needed_search = self.ld.ld_preload + [e.needed]
 
         # If we have more needed, at to list
         if e.needed:
@@ -170,7 +171,7 @@ class BinaryInterface:
         for result in results:
             parse_result(result)
 
-    def gen_output(self, binary=None):
+    def gen_output(self, binary=None, secure=False, no_default_libs=False):
         """
         Generate a graph of symbols (e.g., where everything is found)
         """
@@ -178,15 +179,17 @@ class BinaryInterface:
         if not binary:
             logger.exit("A binary is required.")
         self.reset()
-        self.ld.parse()
+        self.ld.parse(secure=secure, no_default_libs=no_default_libs)
         return self.parse_binary(binary)
 
-    def gen(self, binary=None, fmt=None):
+    def gen(self, binary=None, fmt=None, secure=False, no_default_libs=False):
         """
         Generate a graph of symbols (e.g., where everything is found)
         """
         binary = binary or self.binary
-        results = self.gen_output(binary)
+        results = self.gen_output(
+            binary, secure=secure, no_default_libs=no_default_libs
+        )
 
         # Results returns locations, imported, and exported
         locations = results["found"]
@@ -259,7 +262,8 @@ class BinaryInterface:
 
         # Then at the symbol tables of the DT_NEEDED entries (in order)
         # and then at the second level DT_NEEDED entries, and so on.
-        needed_search = [e.needed]
+        # But if LD_PRELOAD is defined, we do that first.
+        needed_search = self.ld.ld_preload + [e.needed]
 
         # Keep track of libraries we've seen
         seen = set()
@@ -323,6 +327,7 @@ class BinaryInterface:
         # More rare case - the name is a path and it exists
         # If a shared object name has one or more slash (/) characters anywhere in the name
         # the dynamic linker uses that string directly as the path name.
+        # I also check if it exists although this isn't stated in ldmanpages.
         if os.sep in name and os.path.exists(name):
             self.library_cache[name] = name
             return self.library_cache[name], self.source_cache[name], False
@@ -368,7 +373,7 @@ class BinaryInterface:
                 self.source_cache[name] = path
                 return libelf, path, False
 
-        return None, None
+        return None, None, None
 
     def parse_dir(self, path):
         """

@@ -12,4 +12,4 @@ def main(args, parser, extra, subparser):
     if not args.binary:
         logger.exit("You must provide one or more binaries to parse.")
     cli = BinaryInterface(args.binary[0], quiet=args.quiet)
-    cli.tree()
+    cli.tree(secure=args.secure, no_default_libs=args.no_default_libs)

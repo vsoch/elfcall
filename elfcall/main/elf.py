@@ -78,12 +78,17 @@ class ElfFile:
         Compare an elf to another lib's elf type, arch, and header metadata.
         Return True if they match, False otherwise.
         """
-        # Note that including EI_OSABI
+        # Note that we aren't including EI_OSABI because it will not match ELFOSABI_SYSV
+        # to ELFOSABI_LINUX and it should - ELFOSABI_LINUX was renamed to ELFOSABI_GNU
+        # See thread https://twitter.com/stabbbles/status/1486107888212975616
+        # https://stackoverflow.com/questions/19455971/on-linux-abi-in-elf-header-set-to-sys-v-not-linux
         # e_ident[EI_DATA], e_ident[EI_CLASS], e_ident[EI_OSABI], e_ident[EI_ABIVERSION],
         for field in ["EI_CLASS", "EI_DATA", "EI_ABIVERSION"]:
             if self.header["e_ident"][field] != libelf.header["e_ident"][field]:
                 return False
+
         # e_machine, e_type, e_flags and e_version.
+        # Need to double check these are needed
         for field in ["e_type", "e_machine", "e_flags", "e_version"]:
             if self.header[field] != libelf.header[field]:
                 return False

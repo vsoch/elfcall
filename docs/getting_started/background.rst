@@ -14,6 +14,13 @@ I was also less interested in the graph generation, and more interested in the c
 elsewhere. I also found the UI interaction to be confusing and wanted to refactor.
 Thus, elfcall was a weekend project that would also be useful for my current role,
 and I decided to run with it. Elfcall is a combination of "ELF" and then "callgraph."
+For this document, I found these documents to be hugely helpful:
+
+ - `manpages for ld <https://man7.org/linux/man-pages/man8/ld.so.8.html>`_
+ - `Linuxbase refspecs <https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html>`_
+ - `How to Write Shared Libraries <https://akkadia.org/drepper/dsohowto.pdf>`_
+ 
+Note that I haven't fully gone through the last link yet, and likely this document will be updated as I learn more!
 
 Concepts
 ========
@@ -63,6 +70,9 @@ We first choose a binary of interest. It can be a library (``libfoo.so``) or an 
 
 We then read in our binary and check that it's ELF. This is fairly easy to do and there are different parsers for different languages. For Python there is `pyelftools <https://github.com/eliben/pyelftools>`_ used here, and `debug/elf <https://pkg.go.dev/debug/elf>`_ in golang, which I used in `gosmeagle <https://github.com/vsoch/gosmeagle>`_.
 For dynamic linking to work, the ELF needs to have a `dynamic section <https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-42444.html>`_ so we check for that.
+I suspect if you provide ``-static`` at compile time, you won't have this dynamic section. From ld's man page:
+
+    Linux binaries require dynamic linking (linking at run time) unless the -static option was given to ld(1) during compilation.
 
 3. Undefined Symbols
 ^^^^^^^^^^^^^^^^^^^^
@@ -81,7 +91,26 @@ Our task is to find all the symbols that the library needs. They are going to be
 So we then start with the needed dependencies ``DT_NEEDED`` from the binary of interest's header (a list of library names) 
 and add them to a list of lists, let's call this ``needed_search``. We will pop off the first list and continue in a breadth first fashion, 
 looking at the original binary needed before we look at any found libraries needed dependencies. 
-This can be done recursively, or by appending a new list to a list of lists, and continuing until you have an empty list. See `this part <https://github.com/vsoch/elfcall/blob/076b6586c8fdf6a3de77ba099c42150e002d944f/elfcall/main/client.py#L102>`_ of the code for an example.
+However, we also honor ``LD_PRELOAD`` in the environment, so if paths are found there first (that exist) we parse them first, and fully (e.g., their needed get parsed before the main binary).
+This might be a bug in my implementation if their needed should not be parsed. However, we only allow paths in default search directories (the same as defaults) and in secure mode,
+we ignore paths with slashes:
+
+    In secure-execution mode, preload pathnames containing
+    slashes are ignored.  Furthermore, shared objects are
+    preloaded only from the standard search directories and
+    only if they have set-user-ID mode bit enabled (which is
+    not typical).
+
+I am checking that, given we have secure mode and an existing path, if set-user-ID mode is enabled but not for the binary, we skip it.
+The overall process of parsing NEEDED can be done recursively, or by appending a new list to a list of lists, and continuing until you have an empty list. See `this part <https://github.com/vsoch/elfcall/blob/076b6586c8fdf6a3de77ba099c42150e002d944f/elfcall/main/client.py#L102>`_ of the code for an example. If a dependency is found to have a slash in the path, it's 
+used as vertabim. In my script I check to see if it exists first, but the manpages of ld don't state this explicitly:
+
+    When resolving shared object dependencies, the dynamic linker
+    first inspects each dependency string to see if it contains a
+    slash (this can occur if a shared object pathname containing
+    slashes was specified at link time).  If a slash is found, then
+    the dependency string is interpreted as a (relative or absolute)
+    pathname, and the shared object is loaded using that pathname.
 
  - While we do this, we keep track of a set of seen names, which should be either the soname, or if the soname is not defined, the library name from the needed header. As we proceed, if we hit a library that we've seen before, we don't search it again. This also prevents us from looping!
  - Implementation wise, this means the first call to the function will find that ``needed_search`` is None (or similar) and we set it to be a the main binary list of needed names inside of a list. Otherwise, we just append the new library we are searching 's needed to the current list of ``needed_search``.
@@ -90,8 +119,7 @@ This can be done recursively, or by appending a new list to a list of lists, and
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 For each path we find in needed, we first check if we've seen it before (it's in the set of seen) and if so, we continue and skip it.
-Given a library name, we then perform a search for the library, 
-and this has a very specific algorithm too that are specific to the ELF we are searching for.
+Given a library name, we then perform a search for the library, and this has a very specific algorithm too that are specific to the ELF we are searching for.
 
  - Case 1: If we have a ``DT_RPATH`` and ``DT_RUNPATH``, search paths include:
    - ``LD_LIBRARY_PATH``
@@ -105,10 +133,42 @@ and this has a very specific algorithm too that are specific to the ELF we are s
    - default paths as determined by the system / ABI
  - Case 3: If we only have ``DT_RUNPATH`` search pathsare the same as case 1.
 
-Note that this  is for Linux and I'm aware of variation with, for example, musl.
+Note that this is for Linux and I'm aware of variation with, for example, musl.
+Also note that according to the ld manpages:
+
+    Use of DT_RPATH is deprecated.
+
+
+So I suspect it's rare to see, but the dynamic linker will still respect it if found.
+Also note that ``LD_LIBRARY_PATH`` is not followed given secure execution mode:
+
+    unless the executable is being run in secure-execution mode (see below),
+    in which case this variable is ignored.
+
+
+And we have an added ``--secure`` flag to honor this, if desired. Also note that default paths can also be skipped:
+
+
+    From the cache file /etc/ld.so.cache, which contains a
+    compiled list of candidate shared objects previously found in
+    the augmented library path.  If, however, the binary was
+    linked with the -z nodeflib linker option, shared objects in
+    the default paths are skipped.  Shared objects installed in
+    hardware capability directories (see below) are preferred to
+    other shared objects.
+
+
+This can be emulated in the library with ``--no-default-libs``.
 For ``LD_LIBRARY_PATH`` (from the environment) and ``RPATH`` and ``RUNPATH`` from the ELF, you will typically get a set of paths 
 separated by colons ``:`` or ``;`` to parse. In the case you see an empty entry, e.g., "/path/A:" that typically indicates adding the 
-present working directory. As far as I understand, the colon and semicolon are interchangeable.
+present working directory. As far as I understand, the colon and semicolon are interchangeable. From the ld conf manpages:
+
+
+        The items in the list are separated by
+        either colons or semicolons, and there is no support for
+        escaping either separator.  A zero-length directory name
+        indicates the current working directory.
+
 
 For the configuration files, we first look for either ``/etc/ld.so.conf`` and ``/etc/ld-elf.so.conf`` and for each that we find,
 we parse the config file. Parsing means:
@@ -129,7 +189,7 @@ For default paths, I have hard coded the following for linux:
 
 For all of the above, the paths you search are going to depend on the ELF you are parsing (e.g., first the original binary of interest, and then a library that you find from it).
 
-**Note I'm still looking into different envars that should be added here**
+**Note I'm still looking into details here! For example, do we need to parse dynamic string tokens?**
 
 5. Find Libraries
 ^^^^^^^^^^^^^^^^^
@@ -138,13 +198,30 @@ Once you have your search paths, our goal is to find the library we are looking 
 of course with some rules required no matter what, and here is what I did.
 
 1. Any time we find a library, we keep a cache or lookup of the path based on the soname. If the library doesn't have a soname, we use the path. This means that later in the search we won't search for the same thing again. It also means if you have the same soname for different libraries, you aren't going to see the second one.
-2. Firstly, if the path has a slash in it, we usually don't search and use the path verbatim. For my tool I'm checking for existence first, although I haven't read that is required. Basically, the dynamic linker sees the slash and uses the string directly as the path name.
-3. If the path doesn't have a slash, we then look in the library cache to see if we've already found the soname. If yes, we return the associated path. I also return the source (from my source cache) and if we've seen it before (a boolean). E.g., returning at this point would be True, and in the higher level search we would not parse the same library again looking for symbols.
-4. If we haven't seen it, we then start looping through the search paths as determined in step 4. For this step, I also keep a cache of files found in search directories, in the case that we've seen one before. if not, I parse the directory.
-5. Directory parsing is what you'd expect - we do an os.walk to assemble full paths, exclude broken links, resolve symbolic links, and filter to only include files. One thing I'm not sure about is if we can have repeated libraries of the same basename. This might be a bug in my implementation, but I only include the first found basename, and remember the realpath and fullpath. Note that this might need rethinking and be an edge case of finding the same library (with the same name) in two places and truly wanting to use both.
-6. Once we have a listing of files, we "test" each one by loading into ELF. We skip anything that isn't elf.
-7. Finally, we do a match to the original binary. We need to check header values for each of ``EI_CLASS``, ``EI_DATA``, ``EI_ABIVERSION`` and ``e_machine``, ``e_type``, ``e_flags``, and ``e_version`` for equality. If they are different (and don't match) we skip.
-8. Finally, once we have a definitive library from the path that indeed is a matching ELF, we add its path (by soname) to the library cache. We return the same ELF, path, and False to say that "we haven't seen this one before."
+2. We first look in the library cache to see if we've already found the soname. If yes, we return the associated path. I also return the source (from my source cache) and if we've seen it before (a boolean). E.g., returning at this point would be True, and in the higher level search we would not parse the same library again looking for symbols.
+3. If we haven't seen it, we then start looping through the search paths as determined in step 4. For this step, I also keep a cache of files found in search directories, in the case that we've seen one before. if not, I parse the directory.
+4. Directory parsing is what you'd expect - we do an os.walk to assemble full paths, exclude broken links, resolve symbolic links, and filter to only include files. One thing I'm not sure about is if we can have repeated libraries of the same basename. This might be a bug in my implementation, but I only include the first found basename, and remember the realpath and fullpath. Note that this might need rethinking and be an edge case of finding the same library (with the same name) in two places and truly wanting to use both.
+5. Once we have a listing of files, we "test" each one by loading into ELF. We skip anything that isn't elf.
+6. Finally, we do a match to the original binary. Along with needing to find an ELF magic number (the first 4 bytes, which is usually handled by the wrapper library like pyelftools), we need to check header values for each of ``EI_CLASS`` and ``EI_DATA`` (the next 2 bytes that need to match the binary exactly) and then ``EI_ABIVERSION`` and ``EI_OSABI``. For the last one, although it technically needs to be checked, it looks like `there are some deprecations and possible bugs <https://twitter.com/stabbbles/status/1486107888212975616>`_ so I'm not checking it for now.
+7. I'm not sure about these yet, but I am also checing ``e_machine``, ``e_type``, ``e_flags``, and ``e_version`` for equality. If they are different (and don't match) we skip.
+7. Finally, once we have a definitive library from the path that indeed is a matching ELF, we add its path (by soname) to the library cache. We return the same ELF, path, and False to say that "we haven't seen this one before."
+
+We likely need to look more into how versions are checked because:
+
+        At run time, the dynamic linker
+        determines the ABI version of the running kernel and will
+        reject loading shared objects that specify minimum ABI
+        versions that exceed that ABI version.
+
+
+If we add this, we might also want to add a variable that "assumes a different kernel"
+
+        LD_ASSUME_KERNEL can be used to cause the dynamic linker
+        to assume that it is running on a system with a different
+        kernel ABI version.  For example, the following command
+        line causes the dynamic linker to assume it is running on
+        Linux 2.2.5 when loading the shared objects required by
+
 
 6. Parse Symbols
 ^^^^^^^^^^^^^^^^
@@ -197,4 +274,4 @@ functions (one recursive one not) and use the same functions for both, and this 
 the list of symbols I'm looking for in one function. But arguably I can refactor to just pass the symbols as an argument in the recursion.
 Honestly, I left the non-recursive version because I think it can be easier to understand for some.
 
-**NOTE** I am still adding details to these notes!
+**NOTE** I am still adding details to these notes! If you see an issue or want to contribute please open a PR or issue!

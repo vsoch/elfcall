@@ -70,6 +70,20 @@ def get_parser():
     )
     for command in [gen, tree]:
         command.add_argument("binary", help="binary to scan", nargs=1)
+        command.add_argument(
+            "--secure",
+            dest="secure",
+            help="generate in secure mode (does not use LD_LIBRARY_PATH, etc)",
+            default=False,
+            action="store_true",
+        )
+        command.add_argument(
+            "--no-default-libs",
+            dest="no_default_libs",
+            help="do not search default library paths",
+            default=False,
+            action="store_true",
+        )
     return parser
 
 
@@ -129,13 +143,13 @@ def run_client():
 
     # Pass on to the correct parser
     return_code = 0
-    # try:
-    main(args=args, parser=parser, extra=extra, subparser=helper)
-    # sys.exit(return_code)
-    # except UnboundLocalError:
-    #    return_code = 1
+    try:
+        main(args=args, parser=parser, extra=extra, subparser=helper)
+        sys.exit(return_code)
+    except UnboundLocalError:
+        return_code = 1
 
-    # help(return_code)
+    help(return_code)
 
 
 if __name__ == "__main__":
