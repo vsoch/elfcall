@@ -14,5 +14,6 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.scom/vsoch/elfcall/tree/main) (0.0.x)
+ - Add check for symbolic links (0.0.1)
  - Initial creation of project (0.0.0)
 

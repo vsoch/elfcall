@@ -263,6 +263,7 @@ class BinaryInterface:
         # Then at the symbol tables of the DT_NEEDED entries (in order)
         # and then at the second level DT_NEEDED entries, and so on.
         # But if LD_PRELOAD is defined, we do that first.
+        # It might change, but we can't determine that (and do our best)
         needed_search = self.ld.ld_preload + [e.needed]
 
         # Keep track of libraries we've seen
