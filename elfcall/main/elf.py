@@ -2,8 +2,9 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-import elfcall.utils as utils
 import elftools.elf.elffile
+
+import elfcall.utils as utils
 
 
 class ElfFile:

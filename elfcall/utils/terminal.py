@@ -2,9 +2,9 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-from subprocess import Popen, PIPE, STDOUT
 import os
 import re
+from subprocess import PIPE, STDOUT, Popen
 
 
 def colify(listing):
@@ -17,7 +17,7 @@ def colify(listing):
             print("{:<20}{:<20}{:<20}{:<}".format(a, b, c, d))
 
 
-def iter_split_path(path):
+def iter_splitpath(path):
     """
     Given a path (e.g., LD_LIBRARY_PATH or DT_RPATH or DT_RUNPATH split into
     individual paths

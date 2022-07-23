@@ -3,8 +3,9 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 
-from elfcall.logger import logger
 import sys
+
+from elfcall.logger import logger
 
 from .base import GraphBase
 

@@ -2,13 +2,13 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-from elfcall.logger import logger
+import os
+from copy import deepcopy
+
+import elfcall.main.elf as elf
 import elfcall.main.graph as graph
 import elfcall.main.ld as ld
-import elfcall.main.elf as elf
-
-from copy import deepcopy
-import os
+from elfcall.logger import logger
 
 
 class BinaryInterface:
@@ -239,7 +239,7 @@ class BinaryInterface:
             )
         return search_paths
 
-    def parse_binary(self, binary):
+    def parse_binary(self, binary, return_missing=False):
         """
         Given a binary, figure out how the linker would find symbols
         """
@@ -263,6 +263,7 @@ class BinaryInterface:
         # Then at the symbol tables of the DT_NEEDED entries (in order)
         # and then at the second level DT_NEEDED entries, and so on.
         # But if LD_PRELOAD is defined, we do that first.
+        # It might change, but we can't determine that (and do our best)
         needed_search = self.ld.ld_preload + [e.needed]
 
         # Keep track of libraries we've seen
@@ -315,6 +316,7 @@ class BinaryInterface:
                 if not imported:
                     break
 
+        results["missing"] = imported
         results["found"] = found
         return results
 

@@ -2,10 +2,12 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-import elfcall.utils as utils
-from glob import glob
-import re
 import os
+import re
+import stat
+from glob import glob
+
+import elfcall.utils as utils
 
 
 class LibraryParser:
@@ -75,14 +77,16 @@ class LibraryParser:
         """
         Get LD_LIBRARY_PATH from the environment
         """
+        paths = []
         path = os.environ.get("LD_LIBRARY_PATH")
 
         # LD_LIBRARY_PATH is used unless the executable is being run in secure-execution mode
         # in which case this variable is ignored.
         if not path or secure:
-            return []
+            return paths
         for path in utils.iter_split_path(path):
             self.sources.append({"lib": path, "source": "LD_LIBRARY_PATH"})
+            paths.append(path)
         return paths
 
     def in_default_path(self, path):

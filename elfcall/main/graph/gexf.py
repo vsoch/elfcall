@@ -3,13 +3,10 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 
-import elfcall.utils as utils
-from elfcall.logger import logger
-import secrets
-import string
 import sys
-
 from datetime import datetime
+from elfcall.logger import logger
+
 from .base import GraphBase
 
 template = """<?xml version="1.0" encoding="UTF-8"?>

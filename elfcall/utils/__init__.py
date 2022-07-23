@@ -1,11 +1,3 @@
-from .terminal import (
-    run_command,
-    get_installdir,
-    which,
-    colify,
-    confirm_action,
-    iter_split_path,
-)
 from .fileio import (
     copyfile,
     get_file_hash,
@@ -19,4 +11,12 @@ from .fileio import (
     recursive_find,
     write_file,
     write_json,
+)
+from .terminal import (
+    colify,
+    confirm_action,
+    get_installdir,
+    iter_splitpath,
+    run_command,
+    which,
 )
