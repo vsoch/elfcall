@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.ld &mdash; elfcall 0.0.11 documentation</title>
+  <title>elfcall.main.ld &mdash; elfcall 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -91,7 +91,9 @@
 
 <div class="viewcode-block" id="LibraryParser"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser">[docs]</a><span class="k">class</span> <span class="nc">LibraryParser</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of parsed paths&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of parsed paths</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_lib_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/lib64&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib&quot;</span><span class="p">,</span> <span class="s2">&quot;/usr/lib64&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf_paths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -110,6 +112,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">no_default_libs</span> <span class="o">=</span> <span class="n">no_default_libs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_ld_so_conf</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_ld_library_path</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LibraryParser.prepend_ld_library_paths"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.prepend_ld_library_paths">[docs]</a>    <span class="k">def</span> <span class="nf">prepend_ld_library_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepend ld library paths we are emulating to be in the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span>
+        <span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">library_paths</span></div>
 
 <div class="viewcode-block" id="LibraryParser.find_source"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.ld.LibraryParser.find_source">[docs]</a>    <span class="k">def</span> <span class="nf">find_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
