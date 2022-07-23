@@ -15,6 +15,7 @@ The versions coincide with releases on pip. Only major versions will be released
 
 ## [0.0.x](https://github.scom/vsoch/elfcall/tree/main) (0.0.x)
  - add support to provide custom LD_LIBRARY_PATH (0.0.12)
+   - loosen matching constaint to not include type
  - Bugfix in function name (0.0.11)
  - Fixing bug in name of utils function (0.0.1)
  - Initial creation of project (0.0.0)

@@ -90,7 +90,8 @@ class ElfFile:
 
         # e_machine, e_type, e_flags and e_version.
         # Need to double check these are needed
-        for field in ["e_type", "e_machine", "e_flags", "e_version"]:
+        # Note removed "e_type" - wasn't matching and I think should have?
+        for field in ["e_machine", "e_flags", "e_version"]:
             if self.header[field] != libelf.header[field]:
                 return False
         return True
