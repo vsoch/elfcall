@@ -169,7 +169,8 @@
 
         <span class="c1"># e_machine, e_type, e_flags and e_version.</span>
         <span class="c1"># Need to double check these are needed</span>
-        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;e_type&quot;</span><span class="p">,</span> <span class="s2">&quot;e_machine&quot;</span><span class="p">,</span> <span class="s2">&quot;e_flags&quot;</span><span class="p">,</span> <span class="s2">&quot;e_version&quot;</span><span class="p">]:</span>
+        <span class="c1"># Note removed &quot;e_type&quot; - wasn&#39;t matching and I think should have?</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;e_machine&quot;</span><span class="p">,</span> <span class="s2">&quot;e_flags&quot;</span><span class="p">,</span> <span class="s2">&quot;e_version&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">!=</span> <span class="n">libelf</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
