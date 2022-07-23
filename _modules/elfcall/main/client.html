@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.client &mdash; elfcall 0.0.0 documentation</title>
+  <title>elfcall.main.client &mdash; elfcall 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -29,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.0
+                0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -80,13 +81,13 @@
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2022, Vanessa Sochat&quot;</span>
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;GPL-3.0&quot;</span>
 
-<span class="kn">from</span> <span class="nn">elfcall.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">elfcall.main.elf</span> <span class="k">as</span> <span class="nn">elf</span>
 <span class="kn">import</span> <span class="nn">elfcall.main.graph</span> <span class="k">as</span> <span class="nn">graph</span>
 <span class="kn">import</span> <span class="nn">elfcall.main.ld</span> <span class="k">as</span> <span class="nn">ld</span>
-<span class="kn">import</span> <span class="nn">elfcall.main.elf</span> <span class="k">as</span> <span class="nn">elf</span>
-
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">elfcall.logger</span> <span class="kn">import</span> <span class="n">logger</span>
 
 
 <div class="viewcode-block" id="BinaryInterface"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface">[docs]</a><span class="k">class</span> <span class="nc">BinaryInterface</span><span class="p">:</span>
@@ -317,7 +318,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">search_paths</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.parse_binary"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.parse_binary">[docs]</a>    <span class="k">def</span> <span class="nf">parse_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.parse_binary"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.parse_binary">[docs]</a>    <span class="k">def</span> <span class="nf">parse_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="p">,</span> <span class="n">return_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a binary, figure out how the linker would find symbols</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -341,6 +342,7 @@
         <span class="c1"># Then at the symbol tables of the DT_NEEDED entries (in order)</span>
         <span class="c1"># and then at the second level DT_NEEDED entries, and so on.</span>
         <span class="c1"># But if LD_PRELOAD is defined, we do that first.</span>
+        <span class="c1"># It might change, but we can&#39;t determine that (and do our best)</span>
         <span class="n">needed_search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">ld_preload</span> <span class="o">+</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">needed</span><span class="p">]</span>
 
         <span class="c1"># Keep track of libraries we&#39;ve seen</span>
@@ -393,6 +395,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">imported</span><span class="p">:</span>
                     <span class="k">break</span>
 
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">imported</span>
         <span class="n">results</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">found</span>
         <span class="k">return</span> <span class="n">results</span></div>
 

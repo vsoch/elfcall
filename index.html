@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elfcall &mdash; elfcall 0.0.0 documentation</title>
+  <title>Elfcall &mdash; elfcall 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/sphinx-argparse.css" type="text/css" />
@@ -15,6 +16,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -30,7 +32,7 @@
             <a href="#" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.0
+                0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -76,73 +78,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="elfcall">
-<span id="manual-main"></span><h1>Elfcall<a class="headerlink" href="#elfcall" title="Permalink to this headline"></a></h1>
+  <section id="elfcall">
+<span id="manual-main"></span><h1>Elfcall<a class="headerlink" href="#elfcall" title="Permalink to this heading"></a></h1>
 <a class="reference external image-reference" href="https://github.com/vsoch/elfcall/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/vsoch/elfcall?style=social" /></a>
 <p>Generate call graph data for an elf binary.</p>
 <p>Elfcall performs two functions:</p>
 <blockquote>
 <div><ul class="simple">
-<li><em>trees</em>: generate a tree of libraries akin to what the dynamic linker would see</li>
-<li><em>graphs</em>: generate a graph that shows linked libraries and symbols exported and needed.</li>
+<li><p><em>trees</em>: generate a tree of libraries akin to what the dynamic linker would see</p></li>
+<li><p><em>graphs</em>: generate a graph that shows linked libraries and symbols exported and needed.</p></li>
 </ul>
 </div></blockquote>
 <p>For the graphs, there are several different output formats (text, cypher for Neo4j, Dot, and gexf for Gephi or NetworkX).</p>
-<div class="section" id="how-does-it-work">
-<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Permalink to this headline"></a></h2>
+<section id="how-does-it-work">
+<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Permalink to this heading"></a></h2>
 <p>On a high level, it works by way of extracting symbols from the ELF, and figuring out dependencies
 via links and RPATH, and then outputting data to file. An important contribution by way of
 developing this library is also trying to document the process, which I found only vaguely
 documented in several places. Previous art of interested that inspired me to work on this:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://github.com/armijnhemel/conference-talks/blob/master/fsfe2013/fsfe2013.pdf">This talk</a> that gives a good high level overview.</li>
-<li><a class="reference external" href="https://github.com/haampie/libtree">libtree</a> which I couldn’t easily go off of because I’m not an expert in C or C++.</li>
-<li><a class="reference external" href="https://git.osadl.org/ckresse/callgraph">callgraph</a> inspired me for the graphs, but I wanted a slightly more organized implementation.</li>
+<li><p><a class="reference external" href="https://github.com/armijnhemel/conference-talks/blob/master/fsfe2013/fsfe2013.pdf">This talk</a> that gives a good high level overview.</p></li>
+<li><p><a class="reference external" href="https://github.com/haampie/libtree">libtree</a> which I couldn’t easily go off of because I’m not an expert in C or C++.</p></li>
+<li><p><a class="reference external" href="https://git.osadl.org/ckresse/callgraph">callgraph</a> inspired me for the graphs, but I wanted a slightly more organized implementation.</p></li>
 </ul>
 </div></blockquote>
 <p>Background material about the method can be found in <a class="reference external" href="https://lwn.net/Articles/548216/">this article</a>
 and you can learn more about ELF from any of these sources:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">https://en.wikipedia.org/wiki/Executable_and_Linkable_Format</a></li>
-<li><a class="reference external" href="https://en.wikipedia.org/wiki/Weak_symbol">https://en.wikipedia.org/wiki/Weak_symbol</a></li>
-<li><a class="reference external" href="https://refspecs.linuxbase.org/elf/elf.pdf">https://refspecs.linuxbase.org/elf/elf.pdf</a></li>
-<li><a class="reference external" href="https://android.googlesource.com/platform/art/+/master/runtime/elf.h">https://android.googlesource.com/platform/art/+/master/runtime/elf.h</a></li>
-<li><a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html">https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html</a></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">https://en.wikipedia.org/wiki/Executable_and_Linkable_Format</a></p></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Weak_symbol">https://en.wikipedia.org/wiki/Weak_symbol</a></p></li>
+<li><p><a class="reference external" href="https://refspecs.linuxbase.org/elf/elf.pdf">https://refspecs.linuxbase.org/elf/elf.pdf</a></p></li>
+<li><p><a class="reference external" href="https://android.googlesource.com/platform/art/+/master/runtime/elf.h">https://android.googlesource.com/platform/art/+/master/runtime/elf.h</a></p></li>
+<li><p><a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html">https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-43405/index.html</a></p></li>
 </ul>
 </div></blockquote>
 <p>And this is helpful for understanding the dynamic linker:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section">https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section</a></li>
+<li><p><a class="reference external" href="https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section">https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html#dynamic-section</a></p></li>
 </ul>
 </div></blockquote>
 <p>To see the code, head over to the <a class="reference external" href="https://github.com/vsoch/elfcall/">repository</a>.</p>
-<div class="section" id="getting-started-with-elfcall">
-<span id="main-getting-started"></span><h3>Getting started with Elfcall<a class="headerlink" href="#getting-started-with-elfcall" title="Permalink to this headline"></a></h3>
+<section id="getting-started-with-elfcall">
+<span id="main-getting-started"></span><h3>Getting started with Elfcall<a class="headerlink" href="#getting-started-with-elfcall" title="Permalink to this heading"></a></h3>
 <p>Elfcall can be installed from pypi or directly from the repository. See <a class="reference internal" href="getting_started/installation.html#getting-started-installation"><span class="std std-ref">Installation</span></a> for
 installation, and then the <a class="reference internal" href="getting_started/index.html#getting-started"><span class="std std-ref">Getting Started</span></a> section for using elfcall on the command line.</p>
-</div>
-<div class="section" id="support">
-<span id="main-support"></span><h3>Support<a class="headerlink" href="#support" title="Permalink to this headline"></a></h3>
+</section>
+<section id="support">
+<span id="main-support"></span><h3>Support<a class="headerlink" href="#support" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li>For <strong>bugs and feature requests</strong>, please use the <a class="reference external" href="https://github.com/vsoch/elfcall/issues">issue tracker</a>.</li>
-<li>For <strong>contributions</strong>, visit Spliced on <a class="reference external" href="https://github.com/vsoch/elfcall">Github</a>.</li>
+<li><p>For <strong>bugs and feature requests</strong>, please use the <a class="reference external" href="https://github.com/vsoch/elfcall/issues">issue tracker</a>.</p></li>
+<li><p>For <strong>contributions</strong>, visit Spliced on <a class="reference external" href="https://github.com/vsoch/elfcall">Github</a>.</p></li>
 </ul>
-</div>
-<div class="section" id="resources">
-<h3>Resources<a class="headerlink" href="#resources" title="Permalink to this headline"></a></h3>
-<dl class="docutils">
-<dt><a class="reference external" href="https://github.com/vsoch/elfcall">GitHub Repository</a></dt><dd>The code on GitHub.</dd>
+</section>
+<section id="resources">
+<h3>Resources<a class="headerlink" href="#resources" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><a class="reference external" href="https://github.com/vsoch/elfcall">GitHub Repository</a></dt><dd><p>The code on GitHub.</p>
+</dd>
 </dl>
 <div class="toctree-wrapper compound" id="getting-started">
 </div>
 <div class="toctree-wrapper compound" id="api-reference">
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

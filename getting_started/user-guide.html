@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Guide &mdash; elfcall 0.0.0 documentation</title>
+  <title>User Guide &mdash; elfcall 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
@@ -15,6 +16,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -31,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.0
+                0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -92,13 +94,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="user-guide">
-<span id="getting-started-user-guide"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline"></a></h1>
-<div class="section" id="commands">
-<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline"></a></h2>
+  <section id="user-guide">
+<span id="getting-started-user-guide"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this heading"></a></h1>
+<section id="commands">
+<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this heading"></a></h2>
 <p>Elfcall provides the following sub-commands via the <code class="docutils literal notranslate"><span class="pre">elfcall</span></code> command line client.</p>
-<div class="section" id="gen">
-<h3>Gen<a class="headerlink" href="#gen" title="Permalink to this headline"></a></h3>
+<section id="gen">
+<h3>Gen<a class="headerlink" href="#gen" title="Permalink to this heading"></a></h3>
 <p>Gen is used to generate a symbol graph. This is arguably not going to be the best visualization for
 really large trees, however in this case you likely want to use the client to generate
 the same graph (we will show both). First, let’s combine some example code from
@@ -109,8 +111,8 @@ the repository (shown how to clone in <a class="reference internal" href="instal
 </pre></div>
 </div>
 <p>This will generate <code class="docutils literal notranslate"><span class="pre">data/libfoo.so</span></code>, a small library we can use for demonstration.</p>
-<div class="section" id="console">
-<h4>console<a class="headerlink" href="#console" title="Permalink to this headline"></a></h4>
+<section id="console">
+<h4>console<a class="headerlink" href="#console" title="Permalink to this heading"></a></h4>
 <p>The default output prints to the console. Let’s run gen and see what happens!</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so
 </pre></div>
@@ -159,9 +161,9 @@ are dIfferent formats for graphs are shown below. To do this same generation in 
 <p>The output “results” will have sets of imported and exported symbols, and then a lookup of what is found
 and where. Note that this output is consistent between all graph types, hence why the output format is
 not needed.</p>
-</div>
-<div class="section" id="text">
-<h4>text<a class="headerlink" href="#text" title="Permalink to this headline"></a></h4>
+</section>
+<section id="text">
+<h4>text<a class="headerlink" href="#text" title="Permalink to this heading"></a></h4>
 <p>Text output is akin to console, but we are explicitly printing basic entities for a graph.
 We are generating the data as if we are writing nodes and relationships in a graph, and (from Python)
 there is even an optional boolean to indicate we want to see ELF and SYMBOL entries on their own (default is False). This
@@ -196,9 +198,9 @@ would be missing a symbol. To pipe to file:</p>
 <span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="cypher">
-<h4>cypher<a class="headerlink" href="#cypher" title="Permalink to this headline"></a></h4>
+</section>
+<section id="cypher">
+<h4>cypher<a class="headerlink" href="#cypher" title="Permalink to this heading"></a></h4>
 <p>Cypher is the query format for Neo4j, the graph database.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt cypher
 <span class="go">CREATE (omyaovuh:ELF {name: &#39;libfoo.so&#39;, label: &#39;libfoo.so&#39;}),</span>
@@ -247,9 +249,9 @@ and then doing:</p>
 <span class="n">cli</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="dot">
-<h4>dot<a class="headerlink" href="#dot" title="Permalink to this headline"></a></h4>
+</section>
+<section id="dot">
+<h4>dot<a class="headerlink" href="#dot" title="Permalink to this heading"></a></h4>
 <p>Dot is probably one of my favorite because you can use the <a class="reference external" href="https://linux.die.net/man/1/dot">dot</a> command line tool to make pretty
 beautiful plots!</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt dot
@@ -264,9 +266,9 @@ beautiful plots!</p>
 <p>That generates this beauty!</p>
 <img alt="Dot Graph" src="https://raw.githubusercontent.com/vsoch/elfcall/main/data/examples/dot/graph.png" />
 <p>Note that this format isn’t great for large graphs.</p>
-</div>
-<div class="section" id="gexf-networkx">
-<h4>Gexf (NetworkX)<a class="headerlink" href="#gexf-networkx" title="Permalink to this headline"></a></h4>
+</section>
+<section id="gexf-networkx">
+<h4>Gexf (NetworkX)<a class="headerlink" href="#gexf-networkx" title="Permalink to this heading"></a></h4>
 <p>If you want to use networkX or Gephi or <a class="reference external" href="https://github.com/raphv/gexf-js">a viewer</a> you can generate output as follows:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall gen data/libfoo.so --fmt gexf
 <span class="gp">$ </span>elfcall gen data/libfoo.so --fmt gexf &gt; data/examples/gexf/graph.xml
@@ -299,10 +301,10 @@ $ cp $here/data/examples/gexf/graph.xml miserables.gexf
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tree">
-<h3>Tree<a class="headerlink" href="#tree" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="tree">
+<h3>Tree<a class="headerlink" href="#tree" title="Permalink to this heading"></a></h3>
 <p>Elfcall also lets you generate a tree of the library paths parsed:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>elfcall tree data/libfoo.so
 <span class="go">libstdc++.so.6                 [x86_64-linux-gnu.conf]</span>
@@ -359,9 +361,9 @@ $ cp $here/data/examples/gexf/graph.xml miserables.gexf
 <span class="go">0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
