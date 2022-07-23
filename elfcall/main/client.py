@@ -171,7 +171,9 @@ class BinaryInterface:
         for result in results:
             parse_result(result)
 
-    def gen_output(self, binary=None, secure=False, no_default_libs=False):
+    def gen_output(
+        self, binary=None, secure=False, no_default_libs=False, ld_library_paths=None
+    ):
         """
         Generate a graph of symbols (e.g., where everything is found)
         """
@@ -179,6 +181,11 @@ class BinaryInterface:
         if not binary:
             logger.exit("A binary is required.")
         self.reset()
+
+        # If we are adding lb_library_libs manually
+        if ld_library_paths:
+            self.ld.prepend_ld_library_paths(ld_library_paths)
+
         self.ld.parse(secure=secure, no_default_libs=no_default_libs)
         return self.parse_binary(binary)
 

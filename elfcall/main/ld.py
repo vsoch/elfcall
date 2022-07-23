@@ -12,7 +12,9 @@ import elfcall.utils as utils
 
 class LibraryParser:
     def __init__(self):
-        """Return a list of parsed paths"""
+        """
+        Return a list of parsed paths
+        """
         self._default_lib_paths = ["/lib", "/lib64", "/usr/lib", "/usr/lib64"]
         self.library_paths = []
         self.conf_paths = []
@@ -31,6 +33,15 @@ class LibraryParser:
         self.no_default_libs = no_default_libs
         self.conf_paths = self.parse_ld_so_conf()
         self.library_paths = self.parse_ld_library_path(secure=secure)
+
+    def prepend_ld_library_paths(self, paths):
+        """
+        Prepend ld library paths we are emulating to be in the environment.
+        """
+        self.library_paths = self.library_paths or []
+        self.library_paths = [
+            x for x in paths if x not in self.library_paths
+        ] + self.library_paths
 
     def find_source(self, name):
         """
