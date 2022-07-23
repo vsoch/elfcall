@@ -2,15 +2,15 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-import hashlib
 import errno
+import hashlib
+import json
 import os
 import re
 import shutil
 import sys
 import tempfile
-
-import json
+from elfcall.logger import logger
 
 
 def mkdirp(dirnames):

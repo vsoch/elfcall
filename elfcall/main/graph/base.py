@@ -3,11 +3,12 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 
-from elfcall.logger import logger
+import os
 import secrets
 import string
 import sys
-import os
+
+from elfcall.logger import logger
 
 
 class GraphBase:

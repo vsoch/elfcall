@@ -2,13 +2,13 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-from elfcall.logger import logger
+import os
+from copy import deepcopy
+
+import elfcall.main.elf as elf
 import elfcall.main.graph as graph
 import elfcall.main.ld as ld
-import elfcall.main.elf as elf
-
-from copy import deepcopy
-import os
+from elfcall.logger import logger
 
 
 class BinaryInterface:
@@ -239,7 +239,7 @@ class BinaryInterface:
             )
         return search_paths
 
-    def parse_binary(self, binary):
+    def parse_binary(self, binary, return_missing=False):
         """
         Given a binary, figure out how the linker would find symbols
         """
@@ -316,6 +316,7 @@ class BinaryInterface:
                 if not imported:
                     break
 
+        results["missing"] = imported
         results["found"] = found
         return results
 

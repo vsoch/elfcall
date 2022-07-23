@@ -2,9 +2,9 @@ __author__ = "Vanessa Sochat"
 __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
-from subprocess import Popen, PIPE, STDOUT
 import os
 import re
+from subprocess import PIPE, STDOUT, Popen
 
 
 def colify(listing):
