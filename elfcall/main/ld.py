@@ -84,7 +84,7 @@ class LibraryParser:
         # in which case this variable is ignored.
         if not path or secure:
             return paths
-        for path in utils.iter_split_path(path):
+        for path in utils.iter_splitpath(path):
             self.sources.append({"lib": path, "source": "LD_LIBRARY_PATH"})
             paths.append(path)
         return paths
@@ -111,7 +111,7 @@ class LibraryParser:
         if not path:
             return paths
 
-        for path in utils.iter_split_path(path):
+        for path in utils.iter_splitpath(path):
 
             # In secure-execution mode, preload pathnames containing slashes are ignored
             if self.secure and os.sep in path:
