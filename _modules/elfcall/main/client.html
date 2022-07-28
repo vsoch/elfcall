@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.client &mdash; elfcall 0.0.12 documentation</title>
+  <title>elfcall.main.client &mdash; elfcall 0.0.13 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.12
+                0.0.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -133,7 +133,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exist.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.tree"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.tree">[docs]</a>    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.tree"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.tree">[docs]</a>    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a library tree</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -144,18 +146,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
 
         <span class="c1"># Load original binary - we need to match elf attributes here</span>
-        <span class="n">original</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="n">binary</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_find</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">original</span><span class="o">=</span><span class="n">original</span><span class="p">)</span>
+        <span class="n">original</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="n">binary</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span>
+        <span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_find</span><span class="p">(</span>
+            <span class="n">binary</span><span class="p">,</span> <span class="n">original</span><span class="o">=</span><span class="n">original</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">library_tree</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.recursive_find"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.recursive_find">[docs]</a>    <span class="k">def</span> <span class="nf">recursive_find</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">needed_search</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lib</span><span class="p">,</span>
+        <span class="n">original</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">needed_search</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">seen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        recursively find needed paths, keep track of hierarchy</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># See parse_binary for notes</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">lib</span><span class="p">),</span> <span class="n">lib</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">lib</span><span class="p">),</span> <span class="n">lib</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">)</span>
 
         <span class="c1"># Keep track of libraries we&#39;ve seen so we don&#39;t loop</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">seen</span><span class="p">:</span>
@@ -190,7 +203,10 @@
 
                 <span class="c1"># Also pass in original to do matching</span>
                 <span class="n">libelf</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">already_seen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_library</span><span class="p">(</span>
-                    <span class="n">path</span><span class="p">,</span> <span class="n">search_paths</span><span class="p">,</span> <span class="n">original</span>
+                    <span class="n">path</span><span class="p">,</span>
+                    <span class="n">search_paths</span><span class="p">,</span>
+                    <span class="n">original</span><span class="p">,</span>
+                    <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="c1"># We might get back a soname instead we&#39;ve already seen</span>
@@ -251,7 +267,12 @@
             <span class="n">parse_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.gen_output"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen_output">[docs]</a>    <span class="k">def</span> <span class="nf">gen_output</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ld_library_paths</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ld_library_paths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a graph of symbols (e.g., where everything is found)</span>
@@ -266,7 +287,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">prepend_ld_library_paths</span><span class="p">(</span><span class="n">ld_library_paths</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.gen"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -325,14 +346,14 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">search_paths</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.parse_binary"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.parse_binary">[docs]</a>    <span class="k">def</span> <span class="nf">parse_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="p">,</span> <span class="n">return_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.parse_binary"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.parse_binary">[docs]</a>    <span class="k">def</span> <span class="nf">parse_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="p">,</span> <span class="n">return_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a binary, figure out how the linker would find symbols</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html# see dynamic-section</span>
         <span class="c1"># We first look at symbol table of executive program to find undefined symbols</span>
         <span class="c1"># This should fail if not an ELF because we cannot continue</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="n">binary</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="n">binary</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">)</span>
 
         <span class="c1"># Keep track of imported, found imported, and exported</span>
         <span class="c1"># imported should be empty at the end</span>
@@ -364,7 +385,9 @@
                 <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
                 <span class="c1"># This will return loaded ELF, if found, otherwise None</span>
-                <span class="n">libelf</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">already_seen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_library</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">search_paths</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">libelf</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">already_seen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_library</span><span class="p">(</span>
+                    <span class="n">path</span><span class="p">,</span> <span class="n">search_paths</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span>
+                <span class="p">)</span>
 
                 <span class="c1"># We might get back a soname instead we&#39;ve already seen</span>
                 <span class="k">if</span> <span class="n">already_seen</span><span class="p">:</span>
@@ -406,7 +429,7 @@
         <span class="n">results</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">found</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
-<div class="viewcode-block" id="BinaryInterface.find_library"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.find_library">[docs]</a>    <span class="k">def</span> <span class="nf">find_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">match_to</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BinaryInterface.find_library"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.find_library">[docs]</a>    <span class="k">def</span> <span class="nf">find_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">match_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a listing of paths, look for a library by name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -440,7 +463,9 @@
                 <span class="c1"># If we find the library, read ELF and look for symbols</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">libelf</span> <span class="o">=</span> <span class="n">elf</span><span class="o">.</span><span class="n">ElfFile</span><span class="p">(</span>
-                        <span class="n">files</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;realpath&quot;</span><span class="p">],</span> <span class="n">files</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;fullpath&quot;</span><span class="p">]</span>
+                        <span class="n">files</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;realpath&quot;</span><span class="p">],</span>
+                        <span class="n">files</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;fullpath&quot;</span><span class="p">],</span>
+                        <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot load </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">files</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>

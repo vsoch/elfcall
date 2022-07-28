@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.elf &mdash; elfcall 0.0.12 documentation</title>
+  <title>elfcall.main.elf &mdash; elfcall 0.0.13 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.12
+                0.0.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -87,7 +87,7 @@
 
 
 <div class="viewcode-block" id="ElfFile"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile">[docs]</a><span class="k">class</span> <span class="nc">ElfFile</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">realpath</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">realpath</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">realpath</span> <span class="o">=</span> <span class="n">realpath</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fullpath</span> <span class="o">=</span> <span class="n">fullpath</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dynamic</span> <span class="o">=</span> <span class="kc">False</span>
@@ -104,6 +104,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">realpath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elf</span> <span class="o">=</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">elffile</span><span class="o">.</span><span class="n">ELFFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">header</span>
+
+        <span class="c1"># Keep @ and @@ properties of symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_versions</span> <span class="o">=</span> <span class="n">use_versions</span>
 
         <span class="c1"># We are primarily interested in dynamic elf</span>
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
@@ -202,12 +205,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span></div>
 
     <span class="k">def</span> <span class="nf">_group_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Iterate through symbols and put into imported and exported&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate through symbols and put into imported and exported</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_symbols</span><span class="p">():</span>
 
-            <span class="c1"># Strip compiler @@ versions?</span>
-            <span class="k">if</span> <span class="s2">&quot;@@&quot;</span> <span class="ow">in</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
-                <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Strip versions if desired?</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;@@&quot;</span><span class="p">,</span> <span class="s2">&quot;@&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_versions</span> <span class="ow">and</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                    <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">char</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;def&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SHN_UNDEF&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span><span class="p">[</span><span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">symbol</span>
             <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">:</span>
