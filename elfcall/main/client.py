@@ -54,7 +54,9 @@ class BinaryInterface:
             logger.exit("%s does not exist." % self.binary)
         self.binary = os.path.abspath(self.binary)
 
-    def tree(self, binary=None, secure=False, no_default_libs=False):
+    def tree(
+        self, binary=None, secure=False, no_default_libs=False, use_versions=False
+    ):
         """
         Generate a library tree
         """
@@ -65,18 +67,29 @@ class BinaryInterface:
         self.ld.parse(secure=secure, no_default_libs=no_default_libs)
 
         # Load original binary - we need to match elf attributes here
-        original = elf.ElfFile(os.path.realpath(binary), binary)
-        results = self.recursive_find(binary, original=original)
+        original = elf.ElfFile(
+            os.path.realpath(binary), binary, use_versions=use_versions
+        )
+        results = self.recursive_find(
+            binary, original=original, use_versions=use_versions
+        )
         self.library_tree(results)
 
     def recursive_find(
-        self, lib, original, root=None, needed_search=None, seen=None, level=0
+        self,
+        lib,
+        original,
+        root=None,
+        needed_search=None,
+        seen=None,
+        level=0,
+        use_versions=False,
     ):
         """
         recursively find needed paths, keep track of hierarchy
         """
         # See parse_binary for notes
-        e = elf.ElfFile(os.path.realpath(lib), lib)
+        e = elf.ElfFile(os.path.realpath(lib), lib, use_versions=use_versions)
 
         # Keep track of libraries we've seen so we don't loop
         if not seen:
@@ -111,7 +124,10 @@ class BinaryInterface:
 
                 # Also pass in original to do matching
                 libelf, src, already_seen = self.find_library(
-                    path, search_paths, original
+                    path,
+                    search_paths,
+                    original,
+                    use_versions=use_versions,
                 )
 
                 # We might get back a soname instead we've already seen
@@ -172,7 +188,12 @@ class BinaryInterface:
             parse_result(result)
 
     def gen_output(
-        self, binary=None, secure=False, no_default_libs=False, ld_library_paths=None
+        self,
+        binary=None,
+        secure=False,
+        no_default_libs=False,
+        ld_library_paths=None,
+        use_versions=False,
     ):
         """
         Generate a graph of symbols (e.g., where everything is found)
@@ -187,7 +208,7 @@ class BinaryInterface:
             self.ld.prepend_ld_library_paths(ld_library_paths)
 
         self.ld.parse(secure=secure, no_default_libs=no_default_libs)
-        return self.parse_binary(binary)
+        return self.parse_binary(binary, use_versions=use_versions)
 
     def gen(self, binary=None, fmt=None, secure=False, no_default_libs=False):
         """
@@ -246,14 +267,14 @@ class BinaryInterface:
             )
         return search_paths
 
-    def parse_binary(self, binary, return_missing=False):
+    def parse_binary(self, binary, return_missing=False, use_versions=False):
         """
         Given a binary, figure out how the linker would find symbols
         """
         # https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html# see dynamic-section
         # We first look at symbol table of executive program to find undefined symbols
         # This should fail if not an ELF because we cannot continue
-        e = elf.ElfFile(os.path.realpath(binary), binary)
+        e = elf.ElfFile(os.path.realpath(binary), binary, use_versions=use_versions)
 
         # Keep track of imported, found imported, and exported
         # imported should be empty at the end
@@ -285,7 +306,9 @@ class BinaryInterface:
                 seen.add(path)
 
                 # This will return loaded ELF, if found, otherwise None
-                libelf, _, already_seen = self.find_library(path, search_paths, e)
+                libelf, _, already_seen = self.find_library(
+                    path, search_paths, e, use_versions=use_versions
+                )
 
                 # We might get back a soname instead we've already seen
                 if already_seen:
@@ -327,7 +350,7 @@ class BinaryInterface:
         results["found"] = found
         return results
 
-    def find_library(self, name, paths, match_to=None):
+    def find_library(self, name, paths, match_to=None, use_versions=False):
         """
         Given a listing of paths, look for a library by name
         """
@@ -361,7 +384,9 @@ class BinaryInterface:
                 # If we find the library, read ELF and look for symbols
                 try:
                     libelf = elf.ElfFile(
-                        files[name]["realpath"], files[name]["fullpath"]
+                        files[name]["realpath"],
+                        files[name]["fullpath"],
+                        use_versions=use_versions,
                     )
                 except:
                     logger.warning("Cannot load %s" % files[name])

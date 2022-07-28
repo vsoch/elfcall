@@ -8,7 +8,7 @@ import elfcall.utils as utils
 
 
 class ElfFile:
-    def __init__(self, realpath, fullpath=None):
+    def __init__(self, realpath, fullpath=None, use_versions=False):
         self.realpath = realpath
         self.fullpath = fullpath
         self.dynamic = False
@@ -25,6 +25,9 @@ class ElfFile:
         self.fd = open(realpath, "rb")
         self.elf = elftools.elf.elffile.ELFFile(self.fd)
         self.header = self.elf.header
+
+        # Keep @ and @@ properties of symbols
+        self.use_versions = use_versions
 
         # We are primarily interested in dynamic elf
         for section in self.elf.iter_sections():
@@ -123,12 +126,16 @@ class ElfFile:
         return self._exported
 
     def _group_symbols(self):
-        """Iterate through symbols and put into imported and exported"""
+        """
+        Iterate through symbols and put into imported and exported
+        """
         for symbol in self.iter_symbols():
 
-            # Strip compiler @@ versions?
-            if "@@" in symbol["name"]:
-                symbol["name"] = symbol["name"].split("@@")[0]
+            # Strip versions if desired?
+            for char in ["@@", "@"]:
+                if not self.user_versions and char in symbol["name"]:
+                    symbol["name"] = symbol["name"].split(char)[0]
+
             if symbol["def"] == "SHN_UNDEF":
                 self._imported[symbol["name"]] = symbol
             elif symbol["name"] not in self._exported:
