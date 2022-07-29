@@ -39,9 +39,7 @@ class LibraryParser:
         Prepend ld library paths we are emulating to be in the environment.
         """
         self.library_paths = self.library_paths or []
-        self.library_paths = [
-            x for x in paths if x not in self.library_paths
-        ] + self.library_paths
+        self.library_paths += [x for x in paths if x not in self.library_paths]
 
     def find_source(self, name):
         """

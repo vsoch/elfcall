@@ -203,11 +203,12 @@ class BinaryInterface:
             logger.exit("A binary is required.")
         self.reset()
 
+        self.ld.parse(secure=secure, no_default_libs=no_default_libs)
+
         # If we are adding lb_library_libs manually
         if ld_library_paths:
             self.ld.prepend_ld_library_paths(ld_library_paths)
 
-        self.ld.parse(secure=secure, no_default_libs=no_default_libs)
         return self.parse_binary(binary, use_versions=use_versions)
 
     def gen(self, binary=None, fmt=None, secure=False, no_default_libs=False):
@@ -354,7 +355,7 @@ class BinaryInterface:
         """
         Given a listing of paths, look for a library by name
         """
-        logger.debug("Looking for %s" % name)
+        logger.info("Looking for %s" % name)
 
         # More rare case - the name is a path and it exists
         # If a shared object name has one or more slash (/) characters anywhere in the name
@@ -415,8 +416,13 @@ class BinaryInterface:
         """
         # Lookup of name to fullpath
         libs = {}
+
         for root, dirs, files in os.walk(path):
             for filename in files:
+
+                # We need to save all indices to any symlink as an entry
+                symlinks = set()
+
                 fullpath = os.path.join(root, filename)
                 if not fullpath:
                     continue
@@ -426,18 +432,21 @@ class BinaryInterface:
                     continue
 
                 # NOTE the link name may be different than first one!
-                if os.path.islink(fullpath):
+                # We need to follow symlinks until we don't have anymore
+                realpath = fullpath
+                while os.path.islink(realpath):
+                    symlinks.add(realpath)
                     realpath = os.path.realpath(fullpath)
-                else:
-                    realpath = fullpath
+                symlinks.add(realpath)
 
                 # Ignore anything that isn't a file
                 if not os.path.isfile(fullpath):
                     continue
 
                 # Can we have repeated libs? This assumes we only grab the first
-                basename = os.path.basename(fullpath)
-                if basename not in libs:
-                    libs[basename] = {"realpath": realpath, "fullpath": fullpath}
+                for symlink_path in symlinks:
+                    basename = os.path.basename(symlink_path)
+                    if basename not in libs:
+                        libs[basename] = {"realpath": realpath, "fullpath": fullpath}
 
         return libs
