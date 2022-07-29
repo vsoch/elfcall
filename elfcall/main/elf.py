@@ -133,7 +133,7 @@ class ElfFile:
 
             # Strip versions if desired?
             for char in ["@@", "@"]:
-                if not self.user_versions and char in symbol["name"]:
+                if not self.use_versions and char in symbol["name"]:
                     symbol["name"] = symbol["name"].split(char)[0]
 
             if symbol["def"] == "SHN_UNDEF":

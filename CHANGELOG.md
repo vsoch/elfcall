@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.scom/vsoch/elfcall/tree/main) (0.0.x)
+ - typo use_versions instead of user_versions (0.0.14)
  - add default argument to not use symbol versions (0.0.13)
  - add support to provide custom LD_LIBRARY_PATH (0.0.12)
    - loosen matching constaint to not include type
