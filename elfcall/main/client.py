@@ -5,9 +5,7 @@ __license__ = "GPL-3.0"
 import os
 from copy import deepcopy
 
-import elfcall.main.elf as elf
-import elfcall.main.graph as graph
-import elfcall.main.ld as ld
+from . import elf, graph, ld
 from elfcall.logger import logger
 
 
