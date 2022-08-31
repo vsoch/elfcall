@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.client &mdash; elfcall 0.0.14 documentation</title>
+  <title>elfcall.main.client &mdash; elfcall 0.0.15 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.14
+                0.0.15
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -84,9 +84,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">import</span> <span class="nn">elfcall.main.elf</span> <span class="k">as</span> <span class="nn">elf</span>
-<span class="kn">import</span> <span class="nn">elfcall.main.graph</span> <span class="k">as</span> <span class="nn">graph</span>
-<span class="kn">import</span> <span class="nn">elfcall.main.ld</span> <span class="k">as</span> <span class="nn">ld</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">elf</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">ld</span>
 <span class="kn">from</span> <span class="nn">elfcall.logger</span> <span class="kn">import</span> <span class="n">logger</span>
 
 
@@ -282,11 +280,12 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;A binary is required.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
+
         <span class="c1"># If we are adding lb_library_libs manually</span>
         <span class="k">if</span> <span class="n">ld_library_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">prepend_ld_library_paths</span><span class="p">(</span><span class="n">ld_library_paths</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="n">no_default_libs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="n">use_versions</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.gen"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_default_libs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -433,7 +432,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a listing of paths, look for a library by name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Looking for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Looking for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="c1"># More rare case - the name is a path and it exists</span>
         <span class="c1"># If a shared object name has one or more slash (/) characters anywhere in the name</span>
@@ -494,8 +493,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Lookup of name to fullpath</span>
         <span class="n">libs</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+
+                <span class="c1"># We need to save all indices to any symlink as an entry</span>
+                <span class="n">symlinks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
                 <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">fullpath</span><span class="p">:</span>
                     <span class="k">continue</span>
@@ -505,19 +509,22 @@
                     <span class="k">continue</span>
 
                 <span class="c1"># NOTE the link name may be different than first one!</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
+                <span class="c1"># We need to follow symlinks until we don&#39;t have anymore</span>
+                <span class="n">realpath</span> <span class="o">=</span> <span class="n">fullpath</span>
+                <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">realpath</span><span class="p">):</span>
+                    <span class="n">symlinks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">realpath</span><span class="p">)</span>
                     <span class="n">realpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">realpath</span> <span class="o">=</span> <span class="n">fullpath</span>
+                <span class="n">symlinks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">realpath</span><span class="p">)</span>
 
                 <span class="c1"># Ignore anything that isn&#39;t a file</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
                     <span class="k">continue</span>
 
                 <span class="c1"># Can we have repeated libs? This assumes we only grab the first</span>
-                <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">basename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">libs</span><span class="p">:</span>
-                    <span class="n">libs</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;realpath&quot;</span><span class="p">:</span> <span class="n">realpath</span><span class="p">,</span> <span class="s2">&quot;fullpath&quot;</span><span class="p">:</span> <span class="n">fullpath</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">symlink_path</span> <span class="ow">in</span> <span class="n">symlinks</span><span class="p">:</span>
+                    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">symlink_path</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">basename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">libs</span><span class="p">:</span>
+                        <span class="n">libs</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;realpath&quot;</span><span class="p">:</span> <span class="n">realpath</span><span class="p">,</span> <span class="s2">&quot;fullpath&quot;</span><span class="p">:</span> <span class="n">fullpath</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="n">libs</span></div></div>
 </pre></div>
