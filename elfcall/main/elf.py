@@ -38,6 +38,7 @@ class ElfFile:
     def __exit__(self):
         self.fd.close()
 
+    @property
     def is_stripped(self):
         """
         Guess if an ELF is stripped based on missing DT_NEEDED and symbols.
