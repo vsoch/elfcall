@@ -38,6 +38,15 @@ class ElfFile:
     def __exit__(self):
         self.fd.close()
 
+    @property
+    def is_stripped(self):
+        """
+        Guess if an ELF is stripped based on missing DT_NEEDED and symbols.
+        """
+        if not list(self.yield_tag("DT_NEEDED")) and not list(self.iter_symbols()):
+            return True
+        return False
+
     def yield_tag(self, name):
         for section in self.elf.iter_sections():
             if isinstance(section, elftools.elf.dynamic.DynamicSection):
