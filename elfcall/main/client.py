@@ -301,6 +301,9 @@ class BinaryInterface:
         # Keep track of libraries we've seen
         seen = set()
 
+        # Remember stripped dependency libraries
+        stripped_deps = set()
+
         # First look for libraries in DT_NEEDED on ld.paths
         while needed_search:
             needed = needed_search.pop(0)
@@ -322,6 +325,14 @@ class BinaryInterface:
                 if not libelf:
                     logger.warning("Cannot find needed library %s" % path)
                     continue
+
+                # Give a warning if possibly stripped
+                if libelf.is_stripped:
+                    logger.warning(
+                        "Library % is possibly stripped - no DT_NEEDED or exposed symbols."
+                        % path
+                    )
+                    stripped_deps.add(path)
 
                 if libelf.needed:
                     needed_search.append(libelf.needed)
@@ -352,6 +363,8 @@ class BinaryInterface:
 
         results["missing"] = imported
         results["found"] = found
+        if stripped_deps:
+            results["stripped_deps"] = stripped_deps
         return results
 
     def find_library(self, name, paths, match_to=None, use_versions=False):
