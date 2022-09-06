@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall package &mdash; elfcall 0.0.15 documentation</title>
+  <title>elfcall package &mdash; elfcall 0.0.16 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.15
+                0.0.16
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -291,6 +291,12 @@ come after the DT_RUNTIME and/or DT_RPATH.</p>
 <dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.get_imported_symbols">
 <span class="sig-name descname"><span class="pre">get_imported_symbols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/elf.html#ElfFile.get_imported_symbols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.elf.ElfFile.get_imported_symbols" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.is_stripped">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_stripped</span></span><a class="headerlink" href="#elfcall.main.elf.ElfFile.is_stripped" title="Permalink to this definition"></a></dt>
+<dd><p>Guess if an ELF is stripped based on missing DT_NEEDED and symbols.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.iter_symbols">

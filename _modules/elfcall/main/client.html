@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>elfcall.main.client &mdash; elfcall 0.0.15 documentation</title>
+  <title>elfcall.main.client &mdash; elfcall 0.0.16 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -30,7 +30,7 @@
             <a href="../../../index.html" class="icon icon-home"> elfcall
           </a>
               <div class="version">
-                0.0.15
+                0.0.16
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -84,8 +84,9 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">elf</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">ld</span>
 <span class="kn">from</span> <span class="nn">elfcall.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">elf</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">ld</span>
 
 
 <div class="viewcode-block" id="BinaryInterface"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface">[docs]</a><span class="k">class</span> <span class="nc">BinaryInterface</span><span class="p">:</span>
@@ -358,7 +359,11 @@
         <span class="c1"># imported should be empty at the end</span>
         <span class="n">imported</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_imported_symbols</span><span class="p">()</span>
         <span class="n">exported</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_exported_symbols</span><span class="p">()</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;imported&quot;</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">imported</span><span class="p">),</span> <span class="s2">&quot;exported&quot;</span><span class="p">:</span> <span class="n">exported</span><span class="p">}</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;imported&quot;</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">imported</span><span class="p">),</span>
+            <span class="s2">&quot;exported&quot;</span><span class="p">:</span> <span class="n">exported</span><span class="p">,</span>
+            <span class="s2">&quot;is_stripped&quot;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">is_stripped</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Keep track of levels of needed, we will parse through level 0, 1, etc.</span>
@@ -374,6 +379,9 @@
 
         <span class="c1"># Keep track of libraries we&#39;ve seen</span>
         <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># Remember stripped dependency libraries</span>
+        <span class="n">stripped_deps</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="c1"># First look for libraries in DT_NEEDED on ld.paths</span>
         <span class="k">while</span> <span class="n">needed_search</span><span class="p">:</span>
@@ -396,6 +404,14 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">libelf</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot find needed library </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
                     <span class="k">continue</span>
+
+                <span class="c1"># Give a warning if possibly stripped</span>
+                <span class="k">if</span> <span class="n">libelf</span><span class="o">.</span><span class="n">is_stripped</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Library </span><span class="si">% i</span><span class="s2">s possibly stripped - no DT_NEEDED or exposed symbols.&quot;</span>
+                        <span class="o">%</span> <span class="n">path</span>
+                    <span class="p">)</span>
+                    <span class="n">stripped_deps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">libelf</span><span class="o">.</span><span class="n">needed</span><span class="p">:</span>
                     <span class="n">needed_search</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">libelf</span><span class="o">.</span><span class="n">needed</span><span class="p">)</span>
@@ -426,6 +442,8 @@
 
         <span class="n">results</span><span class="p">[</span><span class="s2">&quot;missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">imported</span>
         <span class="n">results</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">found</span>
+        <span class="k">if</span> <span class="n">stripped_deps</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;stripped_deps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stripped_deps</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
 <div class="viewcode-block" id="BinaryInterface.find_library"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.client.BinaryInterface.find_library">[docs]</a>    <span class="k">def</span> <span class="nf">find_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">match_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_versions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
