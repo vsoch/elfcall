@@ -5,8 +5,9 @@ __license__ = "GPL-3.0"
 import os
 from copy import deepcopy
 
-from . import elf, graph, ld
 from elfcall.logger import logger
+
+from . import elf, graph, ld
 
 
 class BinaryInterface:
@@ -279,7 +280,11 @@ class BinaryInterface:
         # imported should be empty at the end
         imported = e.get_imported_symbols()
         exported = e.get_exported_symbols()
-        results = {"imported": deepcopy(imported), "exported": exported}
+        results = {
+            "imported": deepcopy(imported),
+            "exported": exported,
+            "is_stripped": e.is_stripped,
+        }
         found = {}
 
         # Keep track of levels of needed, we will parse through level 0, 1, etc.

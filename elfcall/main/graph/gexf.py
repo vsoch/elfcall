@@ -5,6 +5,7 @@ __license__ = "GPL-3.0"
 
 import sys
 from datetime import datetime
+
 from elfcall.logger import logger
 
 from .base import GraphBase
