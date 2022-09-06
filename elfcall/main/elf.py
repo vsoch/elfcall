@@ -43,7 +43,7 @@ class ElfFile:
         """
         Guess if an ELF is stripped based on missing DT_NEEDED and symbols.
         """
-        if not list(self.yield_tag("DT_NEEDED")) and not list(e.iter_symbols()):
+        if not list(self.yield_tag("DT_NEEDED")) and not list(self.iter_symbols()):
             return True
         return False
 
