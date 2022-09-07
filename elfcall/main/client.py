@@ -285,6 +285,10 @@ class BinaryInterface:
             "exported": exported,
             "is_stripped": e.is_stripped,
         }
+
+        # If we don't get symbols, look for debug
+        if not exported and not imported:
+            logger.warning("Did not found symbols in ELF, analysis might be unknown.")
         found = {}
 
         # Keep track of levels of needed, we will parse through level 0, 1, etc.
