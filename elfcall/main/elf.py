@@ -156,7 +156,7 @@ class ElfFile:
         Look for .gnu_debuglink
         """
         for section in self.elf.iter_sections():
-            if section.name == ".gnu_debugdata":
+            if section.name == ".gnu_debuglink":
                 # This is bytes and the user needs to parse it
                 return section.data()
 
