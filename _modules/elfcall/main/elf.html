@@ -235,7 +235,7 @@
 <span class="sd">        Look for .gnu_debuglink</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">section</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.gnu_debugdata&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">section</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.gnu_debuglink&quot;</span><span class="p">:</span>
                 <span class="c1"># This is bytes and the user needs to parse it</span>
                 <span class="k">return</span> <span class="n">section</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
 
