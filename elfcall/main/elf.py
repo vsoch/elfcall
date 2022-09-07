@@ -3,7 +3,6 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 import elftools.elf.elffile
-from elfcall.logger import logger
 
 import elfcall.utils as utils
 
