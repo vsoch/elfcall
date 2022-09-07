@@ -293,6 +293,12 @@ come after the DT_RUNTIME and/or DT_RPATH.</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.gnu_debuglink">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gnu_debuglink</span></span><a class="headerlink" href="#elfcall.main.elf.ElfFile.gnu_debuglink" title="Permalink to this definition"></a></dt>
+<dd><p>Look for .gnu_debuglink</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.is_stripped">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_stripped</span></span><a class="headerlink" href="#elfcall.main.elf.ElfFile.is_stripped" title="Permalink to this definition"></a></dt>
 <dd><p>Guess if an ELF is stripped based on missing DT_NEEDED and symbols.</p>
@@ -301,7 +307,8 @@ come after the DT_RUNTIME and/or DT_RPATH.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.iter_symbols">
 <span class="sig-name descname"><span class="pre">iter_symbols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/elfcall/main/elf.html#ElfFile.iter_symbols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#elfcall.main.elf.ElfFile.iter_symbols" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Expose non weak and local symbols</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="elfcall.main.elf.ElfFile.matches">

@@ -364,6 +364,10 @@
             <span class="s2">&quot;exported&quot;</span><span class="p">:</span> <span class="n">exported</span><span class="p">,</span>
             <span class="s2">&quot;is_stripped&quot;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">is_stripped</span><span class="p">,</span>
         <span class="p">}</span>
+
+        <span class="c1"># If we don&#39;t get symbols, look for debug</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exported</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">imported</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Did not found symbols in ELF, analysis might be unknown.&quot;</span><span class="p">)</span>
         <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Keep track of levels of needed, we will parse through level 0, 1, etc.</span>

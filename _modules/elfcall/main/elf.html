@@ -229,7 +229,20 @@
             <span class="k">elif</span> <span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_exported</span><span class="p">[</span><span class="n">symbol</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">symbol</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gnu_debuglink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Look for .gnu_debuglink</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">section</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.gnu_debugdata&quot;</span><span class="p">:</span>
+                <span class="c1"># This is bytes and the user needs to parse it</span>
+                <span class="k">return</span> <span class="n">section</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
 <div class="viewcode-block" id="ElfFile.iter_symbols"><a class="viewcode-back" href="../../../api_reference/internal/elfcall.html#elfcall.main.elf.ElfFile.iter_symbols">[docs]</a>    <span class="k">def</span> <span class="nf">iter_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expose non weak and local symbols</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">elftools</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">SymbolTableSection</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">iter_symbols</span><span class="p">():</span>
