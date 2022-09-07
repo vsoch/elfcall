@@ -3,6 +3,7 @@ __copyright__ = "Copyright 2022, Vanessa Sochat"
 __license__ = "GPL-3.0"
 
 import elftools.elf.elffile
+from elfcall.logger import logger
 
 import elfcall.utils as utils
 
@@ -150,7 +151,20 @@ class ElfFile:
             elif symbol["name"] not in self._exported:
                 self._exported[symbol["name"]] = symbol
 
+    @property
+    def gnu_debuglink(self):
+        """
+        Look for .gnu_debuglink
+        """
+        for section in self.elf.iter_sections():
+            if section.name == ".gnu_debugdata":
+                # This is bytes and the user needs to parse it
+                return section.data()
+
     def iter_symbols(self):
+        """
+        Expose non weak and local symbols
+        """
         for section in self.elf.iter_sections():
             if isinstance(section, elftools.elf.sections.SymbolTableSection):
                 for symbol in section.iter_symbols():

@@ -15,6 +15,7 @@ The versions coincide with releases on pip. Only major versions will be released
 
 ## [0.0.x](https://github.scom/vsoch/elfcall/tree/main) (0.0.x)
  - best effort guess if an ELF binary is stripped (0.0.16)
+  - addition of debug link property
  - tweaks to ld library path logic (0.0.15)
  - typo use_versions instead of user_versions (0.0.14)
  - add default argument to not use symbol versions (0.0.13)

@@ -10,6 +10,9 @@ from elfcall.logger import logger
 from . import elf, graph, ld
 
 
+debug_dirs = ["/usr/bin/.debug", "/usr/lib/debug"]
+
+
 class BinaryInterface:
     """
     Parse binaries to determine symbols needed and interfaces
@@ -280,11 +283,10 @@ class BinaryInterface:
         # imported should be empty at the end
         imported = e.get_imported_symbols()
         exported = e.get_exported_symbols()
-        results = {
-            "imported": deepcopy(imported),
-            "exported": exported,
-            "is_stripped": e.is_stripped,
-        }
+
+        # If we don't get symbols, look for debug
+        if not exported and not imported:
+            logger.warning("Did not found symbols in ELF, analysis might be unknown.")
         found = {}
 
         # Keep track of levels of needed, we will parse through level 0, 1, etc.
